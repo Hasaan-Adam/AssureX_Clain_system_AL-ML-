@@ -2,5 +2,5 @@ __pycache__/
 venv/
 node_modules/
 frontend/
-*.joblib
+
 *.db
