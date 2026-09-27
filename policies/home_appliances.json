@@ -1,0 +1,119 @@
+{
+  "$schema": "./policy_schema.json",
+  "category_code": "HOME_APPLIANCES",
+  "category_name": "Major & Small Home Appliances",
+  "version": "1.0.0",
+  "effective_date": "2024-01-01",
+  "grace_period_days": 30,
+  "coverage": {
+    "standard_period_months": 24,
+    "extended_period_months_max": 60,
+    "parts_covered": true,
+    "labor_covered": true,
+    "special_component_terms": [
+      {
+        "component_name": "Inverter Compressor (Refrigerators / ACs)",
+        "warranty_months": 120,
+        "conditions": "Parts only after standard period; requires authorized maintenance records"
+      },
+      {
+        "component_name": "Direct Drive Motor (Washing Machines)",
+        "warranty_months": 120,
+        "conditions": "Parts only after standard period"
+      },
+      {
+        "component_name": "Magnetron (Microwaves)",
+        "warranty_months": 36,
+        "conditions": "Standard residential use only"
+      }
+    ]
+  },
+  "repair_limits": {
+    "max_repair_cost_percentage": 70.0,
+    "max_claims_per_warranty": 4,
+    "total_aggregate_limit_percentage": 120.0,
+    "replacement_threshold_percentage": 75.0
+  },
+  "mandatory_documents": [
+    "purchase_invoice",
+    "warranty_card",
+    "serial_number_photo",
+    "installation_certificate"
+  ],
+  "allowed_fault_types": [
+    {
+      "code": "COMPRESSOR_FAILURE",
+      "name": "Compressor or Cooling Failure",
+      "description": "Failure of cooling cycle, gas leakage inside sealed system, or compressor seizure",
+      "auto_eligible": true,
+      "max_coverage_cap": 1200.0
+    },
+    {
+      "code": "MOTOR_FAILURE",
+      "name": "Drive Motor Breakdown",
+      "description": "Drum rotation failure, motor burnout, or electronic inverter board fault",
+      "auto_eligible": true,
+      "max_coverage_cap": 900.0
+    },
+    {
+      "code": "HEATING_ELEMENT_DEFECT",
+      "name": "Heating Element Malfunction",
+      "description": "Defective heating coil in ovens, dishwashers, or water heaters",
+      "auto_eligible": true,
+      "max_coverage_cap": 350.0
+    },
+    {
+      "code": "CONTROL_BOARD_ERROR",
+      "name": "Digital Control Board / PCB Error",
+      "description": "Error codes E01-E99 indicating internal logic board failure",
+      "auto_eligible": true,
+      "max_coverage_cap": 450.0
+    },
+    {
+      "code": "PUMP_LEAKAGE_INTERNAL",
+      "name": "Internal Drainage Pump Failure",
+      "description": "Internal pump seal failure not caused by foreign object blockage",
+      "auto_eligible": true,
+      "max_coverage_cap": 300.0
+    }
+  ],
+  "exclusions": [
+    {
+      "code": "IMPROPER_INSTALLATION",
+      "title": "Improper Installation or Non-Certified Plumbing/Electrical",
+      "description": "Damage caused by uncertified installation, lack of drainage trap, or incorrect voltage connection",
+      "action": "REJECT"
+    },
+    {
+      "code": "COMMERCIAL_USE",
+      "title": "Commercial or Industrial Usage",
+      "description": "Use of residential appliances in laundromats, restaurants, or commercial facilities",
+      "action": "REJECT"
+    },
+    {
+      "code": "WEAR_AND_TEAR_CONSUMABLES",
+      "title": "Normal Wear & Tear of Consumables",
+      "description": "Rubber gaskets, door seals, plastic trays, water filters, carbon brushes, and lint filters",
+      "action": "REJECT"
+    },
+    {
+      "code": "FOREIGN_OBJECT_BLOCKAGE",
+      "title": "Foreign Object Blockage",
+      "description": "Coins, pins, bra underwires, or debris clogging pumps, drain hoses, or impellers",
+      "action": "MANUAL_REVIEW"
+    },
+    {
+      "code": "PEST_INFESTATION",
+      "title": "Pest / Rodent Damage",
+      "description": "Chewed electrical wiring, insect nesting in control boards or condenser coils",
+      "action": "REJECT"
+    }
+  ],
+  "validation_rules": {
+    "require_serial_match": true,
+    "require_invoice_date_check": true,
+    "require_authorized_service_center": true,
+    "require_installation_verification": true,
+    "water_damage_indicator_check": false
+  }
+}

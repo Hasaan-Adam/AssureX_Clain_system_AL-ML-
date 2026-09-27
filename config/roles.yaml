@@ -1,0 +1,85 @@
+roles:
+  customer:
+    description: "Standard end-user / warranty holder"
+    inherits: []
+    permissions:
+      - "claims:create"
+      - "claims:read_own"
+      - "claims:update_own"
+      - "claims:upload_docs"
+      - "claims:appeal_own"
+      - "warranties:register"
+      - "warranties:read_own"
+      - "products:read"
+      - "notifications:read_own"
+      - "notifications:mark_read"
+      - "profile:read_own"
+      - "profile:update_own"
+
+  service_staff:
+    description: "Service-centre staff who file and manage claims on behalf of customers"
+    inherits:
+      - "customer"
+    permissions:
+      - "claims:read_all"
+      - "claims:create_on_behalf"
+      - "claims:add_notes"
+      - "warranties:read_all"
+      - "warranties:create"
+      - "warranties:verify"
+      - "products:read"
+      - "repairs:read_all"
+      - "repairs:create"
+      - "repairs:update_status"
+      - "customers:read"
+      - "notifications:send"
+      - "reports:export"
+
+  reviewer:
+    description: "Claims adjudicator / insurance review officer"
+    inherits:
+      - "staff"
+    permissions:
+      - "claims:review"
+      - "claims:approve"
+      - "claims:reject"
+      - "claims:escalate"
+      - "claims:override_ai"
+      - "predictions:read"
+      - "predictions:evaluate"
+      - "policies:read"
+      - "audit:read_claims"
+      - "reports:read"
+
+  admin:
+    description: "System administrator / compliance officer with full governance"
+    inherits:
+      - "reviewer"
+    permissions:
+      - "users:create"
+      - "users:read"
+      - "users:update"
+      - "users:delete"
+      - "users:manage_roles"
+      - "products:create"
+      - "products:update"
+      - "products:delete"
+      - "policies:create"
+      - "policies:update"
+      - "policies:delete"
+      - "settings:read"
+      - "settings:update"
+      - "audit:read_all"
+      - "audit:export"
+      - "monitoring:read"
+      - "monitoring:manage_alerts"
+      - "system:db_maintenance"
+      - "reports:export"
+
+  # Legacy alias kept so permission lookups still resolve for records that were
+  # created before `staff` was renamed to `service_staff`.
+  staff:
+    description: "Deprecated alias of service_staff"
+    inherits:
+      - "service_staff"
+    permissions: []

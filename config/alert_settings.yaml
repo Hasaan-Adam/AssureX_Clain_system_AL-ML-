@@ -1,0 +1,28 @@
+warranty_expiry:
+  # Days before warranty expiry to generate automated alerts / notifications
+  alert_days:
+    - 30
+    - 15
+    - 7
+    - 0  # Day of expiry
+  post_expiry_grace_reminder_days:
+    - -3 # 3 days after expiry during grace period
+  frequency: "daily"
+  cooldown_hours_between_same_alert: 24
+
+claim_status_alerts:
+  notify_customer_on_status_change: true
+  notify_reviewer_on_new_manual_review: true
+  notify_admin_on_fraud_escalation: true
+  sla_warning_hours: 48 # Alert if claim remains in manual review > 48h
+  sla_breach_hours: 72  # Alert if claim remains unprocessed > 72h
+
+channels:
+  in_app:
+    enabled: true
+    retention_days: 90
+  email:
+    enabled: false
+    digest_enabled: true
+  sms:
+    enabled: false

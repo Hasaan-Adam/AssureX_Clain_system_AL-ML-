@@ -1,0 +1,70 @@
+app:
+  name: "AssureX Claim Engine"
+  version: "1.0.0"
+  description: "Enterprise Warranty Lifecycle and AI-Powered Claim Adjudication Engine"
+  api_prefix: "/api/v1"
+  environment: "development"
+  debug: true
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+  reload: true
+
+database:
+  url: "sqlite:///C:/Users/Ahmed Bilal Khan/Desktop/AssureX Claim Engine/AssureX-Claim-Engine/assurex.db"
+  echo: false
+  pool_pre_ping: true
+  # PostgreSQL example: "postgresql+psycopg2://user:password@localhost:5432/assurex_db"
+
+security:
+  secret_key: "assurex-super-secret-production-encryption-key-change-in-env"
+  algorithm: "HS256"
+  access_token_expire_minutes: 60
+  refresh_token_expire_days: 7
+  password_reset_token_expire_minutes: 15
+
+cors:
+  allow_origins:
+    - "http://localhost:3000"
+    - "http://localhost:5173"
+    - "http://localhost:8000"
+    - "http://127.0.0.1:3000"
+    - "http://127.0.0.1:5173"
+    - "http://127.0.0.1:8000"
+  allow_credentials: true
+  allow_methods:
+    - "*"
+  allow_headers:
+    - "*"
+
+logging:
+  level: "INFO"
+  format: "json"
+  log_file: "logs/assurex.log"
+  max_bytes: 10485760 # 10MB
+  backup_count: 5
+
+uploads:
+  upload_dir: "./uploads"
+  max_file_size_bytes: 10485760 # 10MB
+  allowed_extensions:
+    - ".pdf"
+    - ".png"
+    - ".jpg"
+    - ".jpeg"
+    - ".webp"
+  allowed_mime_types:
+    - "application/pdf"
+    - "image/png"
+    - "image/jpeg"
+    - "image/webp"
+
+email:
+  enabled: true
+  smtp_host: "smtp.gmail.com"
+  smtp_port: 587
+  smtp_username: "ahmedbilalkhangl09@gmail.com"
+  smtp_password: "pvrahwujjucsqwlo"
+  from_email: "ahmedbilalkhangl09@gmail.com"
+  from_name: "AssureX Claim Engine"

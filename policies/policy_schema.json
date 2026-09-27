@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssureX Warranty Policy Schema",
+  "description": "Validation schema for category-specific warranty adjudication policies",
+  "type": "object",
+  "required": [
+    "category_code",
+    "category_name",
+    "version",
+    "effective_date",
+    "coverage",
+    "repair_limits",
+    "mandatory_documents",
+    "allowed_fault_types",
+    "exclusions",
+    "validation_rules"
+  ],
+  "properties": {
+    "category_code": {
+      "type": "string",
+      "description": "Unique identifier for product category"
+    },
+    "category_name": {
+      "type": "string",
+      "description": "Human-readable name of product category"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+      "description": "Semantic policy version"
+    },
+    "effective_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date from which this policy takes effect (YYYY-MM-DD)"
+    },
+    "grace_period_days": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Allowed days post warranty expiration for submission"
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "standard_period_months",
+        "parts_covered",
+        "labor_covered"
+      ],
+      "properties": {
+        "standard_period_months": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "extended_period_months_max": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "parts_covered": {
+          "type": "boolean"
+        },
+        "labor_covered": {
+          "type": "boolean"
+        },
+        "special_component_terms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["component_name", "warranty_months"],
+            "properties": {
+              "component_name": {"type": "string"},
+              "warranty_months": {"type": "integer", "minimum": 1},
+              "conditions": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "repair_limits": {
+      "type": "object",
+      "required": [
+        "max_repair_cost_percentage",
+        "max_claims_per_warranty"
+      ],
+      "properties": {
+        "max_repair_cost_percentage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Maximum claim repair cost as % of original purchase invoice"
+        },
+        "max_claims_per_warranty": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "total_aggregate_limit_percentage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 150
+        },
+        "replacement_threshold_percentage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "mandatory_documents": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "purchase_invoice",
+          "warranty_card",
+          "diagnostic_report",
+          "device_photo_front",
+          "device_photo_back",
+          "serial_number_photo",
+          "damage_photo",
+          "technician_report",
+          "installation_certificate"
+        ]
+      },
+      "minItems": 1
+    },
+    "allowed_fault_types": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "name", "auto_eligible"],
+        "properties": {
+          "code": {"type": "string"},
+          "name": {"type": "string"},
+          "description": {"type": "string"},
+          "auto_eligible": {"type": "boolean"},
+          "max_coverage_cap": {"type": "number"}
+        }
+      },
+      "minItems": 1
+    },
+    "exclusions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "title", "description", "action"],
+        "properties": {
+          "code": {"type": "string"},
+          "title": {"type": "string"},
+          "description": {"type": "string"},
+          "action": {
+            "type": "string",
+            "enum": ["REJECT", "MANUAL_REVIEW", "DEDUCTIBLE_APPLIED"]
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "validation_rules": {
+      "type": "object",
+      "required": [
+        "require_serial_match",
+        "require_invoice_date_check"
+      ],
+      "properties": {
+        "require_serial_match": {"type": "boolean"},
+        "require_invoice_date_check": {"type": "boolean"},
+        "require_authorized_service_center": {"type": "boolean"},
+        "require_installation_verification": {"type": "boolean"},
+        "water_damage_indicator_check": {"type": "boolean"},
+        "battery_health_percentage_threshold": {"type": "number", "minimum": 0, "maximum": 100}
+      }
+    }
+  }
+}

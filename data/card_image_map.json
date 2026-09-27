@@ -1,0 +1,15 @@
+{
+  "total_images": 6449,
+  "splits": {
+    "train": {
+      "base": 1862,
+      "variations": 3724
+    },
+    "validation": {
+      "base": 428
+    },
+    "test": {
+      "base": 435
+    }
+  }
+}

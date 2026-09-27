@@ -1,0 +1,116 @@
+{
+  "$schema": "./policy_schema.json",
+  "category_code": "MOBILE_PHONES",
+  "category_name": "Smartphones & Mobile Devices",
+  "version": "1.0.0",
+  "effective_date": "2024-01-01",
+  "grace_period_days": 7,
+  "coverage": {
+    "standard_period_months": 12,
+    "extended_period_months_max": 24,
+    "parts_covered": true,
+    "labor_covered": true,
+    "special_component_terms": [
+      {
+        "component_name": "Rechargeable Lithium Battery",
+        "warranty_months": 12,
+        "conditions": "Covered only if maximum capacity drops below 80% under 500 charge cycles without swelling"
+      },
+      {
+        "component_name": "OLED / AMOLED Display Panel",
+        "warranty_months": 12,
+        "conditions": "Covers manufacturer burn-in or touch controller failure without glass crack"
+      }
+    ]
+  },
+  "repair_limits": {
+    "max_repair_cost_percentage": 65.0,
+    "max_claims_per_warranty": 2,
+    "total_aggregate_limit_percentage": 100.0,
+    "replacement_threshold_percentage": 70.0
+  },
+  "mandatory_documents": [
+    "purchase_invoice",
+    "warranty_card",
+    "device_photo_front",
+    "device_photo_back",
+    "serial_number_photo"
+  ],
+  "allowed_fault_types": [
+    {
+      "code": "TOUCH_CONTROLLER_FAILURE",
+      "name": "Touch Digitizer / Screen Sensor Failure",
+      "description": "Unresponsive touchscreen or ghost touches with intact glass cover",
+      "auto_eligible": true,
+      "max_coverage_cap": 300.0
+    },
+    {
+      "code": "BATTERY_DEGRADATION_PREMATURE",
+      "name": "Premature Battery Degradation",
+      "description": "Battery health drops < 80% within warranty period with documented diagnostic logs",
+      "auto_eligible": true,
+      "max_coverage_cap": 100.0
+    },
+    {
+      "code": "CAMERA_MODULE_DEFECT",
+      "name": "Camera Sensor / OIS Malfunction",
+      "description": "Focus motor failure, blurry sensor, or optical stabilization vibration without drop impact",
+      "auto_eligible": true,
+      "max_coverage_cap": 250.0
+    },
+    {
+      "code": "NETWORK_BASEBAND_FAILURE",
+      "name": "Cellular / WiFi / Bluetooth Module Fault",
+      "description": "Baseband modem failure, no service, or Wi-Fi greyed out",
+      "auto_eligible": true,
+      "max_coverage_cap": 350.0
+    },
+    {
+      "code": "CHARGING_IC_FAILURE",
+      "name": "Charging IC / Power Management Defect",
+      "description": "Device fails to accept charge despite undamaged USB-C / Lightning port",
+      "auto_eligible": true,
+      "max_coverage_cap": 180.0
+    }
+  ],
+  "exclusions": [
+    {
+      "code": "SCREEN_CRACK_ACCIDENTAL",
+      "title": "Accidental Screen & Glass Cracking",
+      "description": "Cracked, shattered, or fractured front display glass or rear back glass from accidental drops",
+      "action": "REJECT"
+    },
+    {
+      "code": "WATER_INGRESS_SUBMERSION",
+      "title": "Liquid Ingress or Submersion",
+      "description": "Red Liquid Contact Indicator (LCI) triggered or internal corrosion regardless of IP rating",
+      "action": "REJECT"
+    },
+    {
+      "code": "UNAUTHORIZED_BATTERY_REPLACEMENT",
+      "title": "Non-OEM Battery or Screen Replacement",
+      "description": "Any previous uncertified part replacement, battery puncture, or jailbreak/root modification",
+      "action": "REJECT"
+    },
+    {
+      "code": "BENT_FRAME_STRUCTURAL",
+      "title": "Bent Frame / Enclosure Stress",
+      "description": "Structural chassis warping or bending caused by pocket pressure or bending force",
+      "action": "REJECT"
+    },
+    {
+      "code": "STOLEN_OR_LOST",
+      "title": "Lost or Stolen Device",
+      "description": "Claims without the physical device or locked with activation lock / blacklisted IMEI",
+      "action": "REJECT"
+    }
+  ],
+  "validation_rules": {
+    "require_serial_match": true,
+    "require_invoice_date_check": true,
+    "require_authorized_service_center": true,
+    "require_installation_verification": false,
+    "water_damage_indicator_check": true,
+    "battery_health_percentage_threshold": 80.0
+  }
+}

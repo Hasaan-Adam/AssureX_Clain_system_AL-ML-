@@ -1,0 +1,38 @@
+ai_comparison:
+  # Discrepancy delta thresholds between dual AI models / OCR and user inputs
+  strong_match_delta: 0.10      # delta <= 0.10: High agreement between models/data
+  acceptable_delta: 0.20        # delta <= 0.20: Acceptable variance
+  weak_match_delta: 0.35        # delta <= 0.35: Moderate divergence, review suggested
+  disagreement_delta: 0.35      # delta > 0.35: Severe disagreement, triggers manual review
+
+confidence_thresholds:
+  high_confidence: 0.80         # >= 0.80: High confidence prediction
+  medium_confidence_min: 0.60   # 0.60 <= score < 0.80: Moderate confidence
+  low_confidence: 0.60          # < 0.60: Low confidence prediction
+
+decision_rules:
+  auto_approval:
+    min_confidence: 0.85
+    max_fraud_score: 0.15
+    max_claim_amount_ratio: 0.75 # claim amount / product purchase price
+    require_verified_warranty: true
+    require_all_docs_valid: true
+  auto_rejection:
+    min_confidence: 0.85
+    min_fraud_score: 0.80
+    direct_policy_exclusion_rejection: true
+  manual_review:
+    trigger_confidence_range:
+      min: 0.60
+      max: 0.85
+    trigger_fraud_score_range:
+      min: 0.30
+      max: 0.80
+    trigger_on_ai_disagreement: true
+    trigger_on_missing_receipt: true
+
+ocr_matching:
+  serial_number_fuzzy_threshold: 0.85
+  model_number_fuzzy_threshold: 0.85
+  date_match_tolerance_days: 7
+  price_tolerance_percentage: 0.05

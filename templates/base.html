@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AssureX Claim Engine{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+    <header class="bg-slate-900 text-white p-4 shadow">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-wide">AssureX Claim Engine</h1>
+            <nav class="space-x-4">
+                <a href="/api/v1/health" class="text-slate-300 hover:text-white">API Health</a>
+                <a href="/docs" class="text-slate-300 hover:text-white">Swagger API Docs</a>
+            </nav>
+        </div>
+    </header>
+    <main class="max-w-7xl mx-auto p-6">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="text-center py-6 text-slate-500 text-sm border-t border-slate-200 mt-12">
+        AssureX Intelligent Warranty Adjudication Platform &copy; 2026. All rights reserved.
+    </footer>
+</body>
+</html>

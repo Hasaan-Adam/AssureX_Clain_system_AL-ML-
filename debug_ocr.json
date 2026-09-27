@@ -1,0 +1,22 @@
+{
+  "ocr_res": {
+    "text": "3067",
+    "confidence": 0.73,
+    "metadata": {
+      "image_width": 320,
+      "image_height": 167,
+      "engine": "RapidOCR-ONNX"
+    }
+  },
+  "entities": {
+    "invoice_number": null,
+    "purchase_date": null,
+    "purchase_price": null,
+    "serial_number": null,
+    "model_number": null,
+    "retailer": null,
+    "warranty_duration": null,
+    "entity_count": 0,
+    "extraction_confidence": 0.0
+  }
+}

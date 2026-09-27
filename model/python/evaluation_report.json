@@ -1,0 +1,56 @@
+{
+  "test_dataset": "data\\test\\claims_test.csv",
+  "total_test_samples": 13500,
+  "srs_requirement_met": true,
+  "metrics": {
+    "accuracy": 0.9011111111111111,
+    "precision_macro": 0.9011101276114771,
+    "precision_weighted": 0.9010909865885964,
+    "recall_macro": 0.9011308856339234,
+    "recall_weighted": 0.9011111111111111,
+    "f1_macro": 0.9011203628132703,
+    "f1_weighted": 0.9011009051034103
+  },
+  "classes": [
+    "Invalid Claim",
+    "Manual Review",
+    "Valid Claim"
+  ],
+  "class_breakdown": {
+    "Invalid Claim": {
+      "precision": 0.9375555555555556,
+      "recall": 0.9385984427141268,
+      "f1-score": 0.938076709282935,
+      "support": 4495
+    },
+    "Manual Review": {
+      "precision": 0.8845470692717584,
+      "recall": 0.8839582871089416,
+      "f1-score": 0.8842525801797803,
+      "support": 4507
+    },
+    "Valid Claim": {
+      "precision": 0.8812277580071174,
+      "recall": 0.8808359270787016,
+      "f1-score": 0.8810317989770958,
+      "support": 4498
+    }
+  },
+  "confusion_matrix": [
+    [
+      4219,
+      125,
+      151
+    ],
+    [
+      140,
+      3984,
+      383
+    ],
+    [
+      141,
+      395,
+      3962
+    ]
+  ]
+}

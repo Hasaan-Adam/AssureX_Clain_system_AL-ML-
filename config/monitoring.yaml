@@ -1,0 +1,32 @@
+anomaly_thresholds:
+  daily_claim_surge:
+    max_claims_per_day: 100
+    surge_percentage_over_7d_avg: 150 # 150% jump compared to trailing 7-day average
+    alert_severity: "HIGH"
+
+  high_rejection_rate:
+    window_hours: 24
+    min_claim_sample_size: 20
+    rejection_rate_percentage: 40.0 # Rejection rate > 40% triggers anomaly review
+    alert_severity: "MEDIUM"
+
+  manual_review_queue:
+    max_pending_queue_size: 50
+    alert_severity: "HIGH"
+    unassigned_timeout_hours: 12
+
+  fraud_spike:
+    window_hours: 24
+    high_fraud_claim_count: 5 # >= 5 fraud score > 0.70 claims in 24h
+    alert_severity: "CRITICAL"
+
+  ai_discrepancy_rate:
+    window_hours: 24
+    min_evaluated_claims: 15
+    discrepancy_rate_percentage: 25.0 # AI models disagree in > 25% of cases
+    alert_severity: "MEDIUM"
+
+system_health:
+  check_interval_seconds: 60
+  db_connection_pool_warning_percentage: 80.0
+  error_rate_threshold_percentage: 5.0 # > 5% 5xx errors in 5 min window

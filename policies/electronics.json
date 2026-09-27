@@ -1,0 +1,114 @@
+{
+  "$schema": "./policy_schema.json",
+  "category_code": "ELECTRONICS",
+  "category_name": "Consumer Electronics",
+  "version": "1.0.0",
+  "effective_date": "2024-01-01",
+  "grace_period_days": 14,
+  "coverage": {
+    "standard_period_months": 12,
+    "extended_period_months_max": 24,
+    "parts_covered": true,
+    "labor_covered": true,
+    "special_component_terms": [
+      {
+        "component_name": "Motherboard / PCB",
+        "warranty_months": 24,
+        "conditions": "No burn marks or short circuits caused by external power surges"
+      },
+      {
+        "component_name": "Power Adapter / Supply Unit",
+        "warranty_months": 6,
+        "conditions": "OEM adapters only"
+      }
+    ]
+  },
+  "repair_limits": {
+    "max_repair_cost_percentage": 75.0,
+    "max_claims_per_warranty": 3,
+    "total_aggregate_limit_percentage": 100.0,
+    "replacement_threshold_percentage": 80.0
+  },
+  "mandatory_documents": [
+    "purchase_invoice",
+    "warranty_card",
+    "serial_number_photo",
+    "damage_photo"
+  ],
+  "allowed_fault_types": [
+    {
+      "code": "POWER_FAILURE",
+      "name": "Power or Boot Failure",
+      "description": "Device fails to power on or boots erratically due to internal component defect",
+      "auto_eligible": true,
+      "max_coverage_cap": 800.0
+    },
+    {
+      "code": "DISPLAY_DEFECT",
+      "name": "Internal Display Defect",
+      "description": "Dead pixels, backlight bleeding, or internal controller fault (non-impact)",
+      "auto_eligible": true,
+      "max_coverage_cap": 600.0
+    },
+    {
+      "code": "AUDIO_FAILURE",
+      "name": "Speaker or Audio Circuit Malfunction",
+      "description": "No sound, distorted audio, or blown internal DAC",
+      "auto_eligible": true,
+      "max_coverage_cap": 250.0
+    },
+    {
+      "code": "PORT_DEFECT",
+      "name": "I/O Port Defect",
+      "description": "HDMI, USB, or charging port failure without physical pin breakage",
+      "auto_eligible": true,
+      "max_coverage_cap": 200.0
+    },
+    {
+      "code": "FIRMWARE_CORRUPTION",
+      "name": "Factory Firmware Corruption",
+      "description": "System lock due to certified OEM firmware failure",
+      "auto_eligible": true,
+      "max_coverage_cap": 150.0
+    }
+  ],
+  "exclusions": [
+    {
+      "code": "PHYSICAL_IMPACT",
+      "title": "Physical Impact or Dropping",
+      "description": "Cracked casings, shattered screens, chassis deformation, or crushed components",
+      "action": "REJECT"
+    },
+    {
+      "code": "LIQUID_DAMAGE",
+      "title": "Liquid Ingress or Moisture Corrosion",
+      "description": "Internal rust, liquid contact indicator tripped, or oxidation",
+      "action": "REJECT"
+    },
+    {
+      "code": "UNAUTHORIZED_MODIFICATION",
+      "title": "Third-Party Repair or Tampering",
+      "description": "Broken warranty seals, uncertified third-party parts, or unofficial firmware modifications",
+      "action": "REJECT"
+    },
+    {
+      "code": "POWER_SURGE_UNPROTECTED",
+      "title": "External Lightning or Grid Surge",
+      "description": "Damage resulting from improper voltage or lightning without surge protection",
+      "action": "MANUAL_REVIEW"
+    },
+    {
+      "code": "NORMAL_WEAR_COSMETIC",
+      "title": "Cosmetic Scratches and Dents",
+      "description": "Surface blemishes not affecting standard device operation",
+      "action": "REJECT"
+    }
+  ],
+  "validation_rules": {
+    "require_serial_match": true,
+    "require_invoice_date_check": true,
+    "require_authorized_service_center": true,
+    "require_installation_verification": false,
+    "water_damage_indicator_check": true
+  }
+}
