@@ -15,7 +15,6 @@ def _get_status_str(status_obj: Any) -> str:
 
 def get_user_dashboard(db: Session, user_id: int) -> Dict[str, Any]:
     """Get user dashboard data conforming to UserDashboardStats."""
-    # Warranties
     warranties = db.query(Warranty).join(Product, Warranty.product_id == Product.id).filter(Product.owner_id == user_id).all()
     today = date.today()
     soon = today + timedelta(days=30)
@@ -23,7 +22,6 @@ def get_user_dashboard(db: Session, user_id: int) -> Dict[str, Any]:
     active_warranties = [w for w in warranties if w.expiry_date >= today]
     expiring_soon = [w for w in warranties if today <= w.expiry_date <= soon]
     
-    # Claims
     claims = db.query(Claim).filter(Claim.claimant_id == user_id).all()
     
     claims_by_status: Dict[str, int] = {}
@@ -52,7 +50,6 @@ def get_user_dashboard(db: Session, user_id: int) -> Dict[str, Any]:
             "fault_type": getattr(c, 'fault_type', 'General'),
         })
 
-    # Pending actions
     pending_actions = []
     if expiring_soon:
         pending_actions.append({
@@ -72,7 +69,6 @@ def get_user_dashboard(db: Session, user_id: int) -> Dict[str, Any]:
         "claims_by_status": claims_by_status,
         "pending_actions": pending_actions,
         "recent_claims": recent_claims,
-        # Backwards compatible alias fields for frontend
         "products_count": len(warranties),
         "expiring_soon": len(expiring_soon),
         "claims_submitted": len(claims),
@@ -131,7 +127,6 @@ def get_admin_dashboard(db: Session) -> Dict[str, Any]:
         "fraud_flagged_count": 0,
         "human_override_rate": 0.0,
         "recent_activity": [],
-        # Alias keys
         "pending_review": pending_reviews,
         "approved": approved_claims,
         "rejected": rejected_claims,

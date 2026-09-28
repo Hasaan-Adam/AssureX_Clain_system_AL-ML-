@@ -19,10 +19,7 @@ from src.schemas.user import UserOut, UserRole
 from src.utils.constants import PRIVILEGED_ROLES, RoleEnum, normalize_role
 
 
-# OAuth2 Scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
-#: Same scheme but never raises - used by endpoints that are readable by
-#: anonymous visitors (public catalogue, warranty serial verification).
 optional_oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
 
 
@@ -33,9 +30,6 @@ class TokenData(BaseModel):
     exp: int
 
 
-# ---------------------------------------------------------
-# Database Session
-# ---------------------------------------------------------
 __all__ = [
     "get_db",
     "get_current_user",
@@ -57,9 +51,6 @@ __all__ = [
 ]
 
 
-# ---------------------------------------------------------
-# Authentication
-# ---------------------------------------------------------
 def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
     db: Session = Depends(get_db),
@@ -130,9 +121,6 @@ def get_optional_user(
     return user
 
 
-# ---------------------------------------------------------
-# Role-Based Access Control
-# ---------------------------------------------------------
 def require_role(*allowed_roles: Any):
     """Dependency factory for role-based access control.
 
@@ -163,7 +151,6 @@ def is_privileged(current_user: "UserOut") -> bool:
     return current_user_role(current_user) in PRIVILEGED_ROLES
 
 
-# Convenience role dependencies
 require_customer = require_role("customer")
 require_staff = require_role("service_staff", "reviewer", "admin")
 require_reviewer = require_role("reviewer", "admin")
@@ -171,9 +158,6 @@ require_admin = require_role("admin")
 require_privileged = require_role("service_staff", "reviewer", "admin")
 
 
-# ---------------------------------------------------------
-# Request Context
-# ---------------------------------------------------------
 def get_request_id(request: Request) -> str:
     """Extract or generate request ID for tracing."""
     return request.headers.get("X-Request-ID", __import__("uuid").uuid4().hex[:8])

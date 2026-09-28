@@ -21,8 +21,6 @@ class RoleEnum(str, Enum):
     ADMIN = "admin"
 
 
-#: Alternative spellings accepted on input (registration payloads, legacy DB
-#: rows, JWT claims) and mapped onto a canonical role value.
 ROLE_ALIASES = {
     "staff": RoleEnum.SERVICE_STAFF.value,
     "service_staff": RoleEnum.SERVICE_STAFF.value,
@@ -38,10 +36,8 @@ ROLE_ALIASES = {
     "administrator": RoleEnum.ADMIN.value,
 }
 
-#: Roles allowed to see claims/products/warranties that belong to other users.
 PRIVILEGED_ROLES = (RoleEnum.SERVICE_STAFF.value, RoleEnum.REVIEWER.value, RoleEnum.ADMIN.value)
 
-#: Roles allowed to adjudicate claims and override the automated decision.
 ADJUDICATOR_ROLES = (RoleEnum.REVIEWER.value, RoleEnum.ADMIN.value)
 
 

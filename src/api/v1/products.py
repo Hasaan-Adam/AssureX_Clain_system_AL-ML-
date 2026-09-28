@@ -46,7 +46,6 @@ def list_products(
     if current_user is not None:
         owner_filter = None if role in PRIVILEGED_ROLES else current_user.id
     else:
-        # Anonymous browsing: public catalogue entries only (no owner records).
         owner_filter = -1
 
     products, total = product_service.list_products(

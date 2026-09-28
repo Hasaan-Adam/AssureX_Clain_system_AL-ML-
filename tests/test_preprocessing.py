@@ -127,7 +127,6 @@ def test_preprocessor_pipeline(tmp_path):
     assert X_trans.shape[0] == 3
     assert len(y_enc) == 3
 
-    # Test saving & loading
     prep_path = tmp_path / "preprocessor.joblib"
     le_path = tmp_path / "label_encoder.joblib"
 

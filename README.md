@@ -1,142 +1,70 @@
-# AssureX Claim Engine
+# AssureX Claim Engine 🚀
 
-[![Python Version](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/)
-[![Framework](https://img.shields.io/badge/Framework-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
-[![ML Engine](https://img.shields.io/badge/ML-Scikit--Learn%20%7C%20XGBoost-F7931E.svg)](https://scikit-learn.org/)
-[![Vision AI](https://img.shields.io/badge/Vision%20AI-Google%20Teachable%20Machine-4285F4.svg)](https://teachablemachine.withgoogle.com/)
-[![Database](https://img.shields.io/badge/Database-SQLite%20%2F%20SQLAlchemy-003B57.svg)](https://www.sqlite.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-
-> **Disclaimer: Academic project developed for TechWizz 2026 NextWave AI Competition**
-
-**AssureX Claim Engine** is a dual-AI automated warranty claim adjudication platform. It combines deterministic business rule engines, supervised tabular machine learning, and computer vision (Teachable Machine) summary card verification to deliver real-time AI adjudication.
+An AI-powered, Web-based warranty claim validation application that helps manufacturers and service centers evaluate claims accurately and efficiently using a Dual-Model AI approach (Python XGBoost + Google Teachable Machine).
 
 ---
 
-## Table of Contents
-1. [System Overview & Architecture](#system-overview--architecture)
-2. [Key Capabilities](#key-capabilities)
-3. [Dual-AI Arbitration Matrix](#dual-ai-arbitration-matrix)
-4. [Installation & Setup](#installation--setup)
-5. [Execution Guide](#execution-guide)
-6. [REST API Documentation](#rest-api-documentation)
+## 🔗 Live Deployment URLs
+- **Frontend (Vercel):** [Insert your Vercel URL here]
+- **Backend API (Ngrok):** `https://unworthy-squishy-knelt.ngrok-free.dev`
+- **Technical Blog:** https://abkbloggers.blogspot.com/2026/09/claim-engine-comprehensive-technical.html
+- **Demonstration Video:** [Insert your YouTube/Drive link here]
+
+### Evaluator Login Credentials
+- **Admin:** `admin@assurex.com` / `admin123`
+- **Reviewer:** `reviewer@assurex.com` / `review123`
+- **Customer:** `customer@assurex.com` / `cust123`
 
 ---
 
-## System Overview & Architecture
-
-AssureX addresses the warranty claim management problem by automating claim validation. Claims flow through a multi-stage validation pipeline:
-
-```mermaid
-flowchart TD
-    A["Claimant Submission / API Ingestion"] --> B["Ingestion & Document Preprocessing"]
-    B --> C["OCR Extraction & Hash Check (SHA-256)"]
-    C --> D{"Deterministic Rule Engine"}
-    
-    D -- "Hard Stop / Policy Exclusion" --> X["AUTO-REJECT (Policy Violation)"]
-    
-    D -- "Pass / Flagged" --> E["Tabular ML Classifier (Random Forest)"]
-    D -- "Pass / Flagged" --> F["Vision TM (MobileNet)"]
-    
-    E --> G["Arbitration & Decision Engine"]
-    F --> G
-    
-    G --> H{"Dual-Model Consensus Check"}
-    H -- "High Agreement (>=0.85 Conf)" --> I["AUTO-APPROVE"]
-    H -- "High Agreement on Invalid" --> J["AUTO-REJECT"]
-    H -- "Disagreement / Delta > 0.35 / Low Conf" --> K["MANUAL REVIEW QUEUE"]
-```
-
----
-
-## Key Capabilities
-
-- **Real-time AI adjudication:** Fast evaluation, feature extraction, and dual-model inference.
-- **Anti-Fraud Checks:**
-  - SHA-256 cryptographic document deduplication.
-  - OCR serial number matching against records.
-  - Temporal contradiction detection (claim date preceding purchase date).
-  - Policy exclusion detection (liquid contact, accidental drop).
-- **Dual-AI Verification:**
-  - **Tabular ML Model:** Random Forest trained on 23 engineered features.
-  - **Vision Teachable Machine:** MobileNetV2 classifying synthesized claim cards.
-- **Grace Period Engine:** Configurable 15-day grace period with automatic routing to human review.
-
----
-
-## Dual-AI Arbitration Matrix
-
-| Rule Engine | Tabular ML Prediction | Vision TM Prediction | Final Decision | Action |
-|---|---|---|---|---|
-| **FAIL** | *Any* | *Any* | **`AUTO_REJECT`** | Immediate rejection |
-| **PASS** | `Valid Claim` ($\ge 0.85$) | `Valid Claim` ($\ge 0.80$) | **`AUTO_APPROVE`** | Instant approval |
-| **PASS** | `Invalid Claim` ($\ge 0.85$) | `Invalid Claim` ($\ge 0.80$) | **`AUTO_REJECT`** | Rejection |
-| **FLAGGED** | *Any* | *Any* | **`MANUAL_REVIEW`** | Dispatched to human adjuster |
-| **PASS** | `Valid Claim` | `Manual Review` / `Invalid` | **`MANUAL_REVIEW`** | Model divergence trigger |
-
----
-
-## Installation & Setup
+## 💻 Installation Instructions
 
 ### Prerequisites
-- Python 3.11 or 3.12
-- Git
+- Operating System: Windows 10/11, macOS, or Linux
+- Python Version: Python 3.10+
+- Node.js Version: v18+
 
-### Step-by-Step Installation
+### Complete Project Setup
+1. **Clone the final repository:** `git clone https://github.com/bkhanzaza551-a11y/AssureX_Clain_system_AL-ML-.git`
+2. **Navigate to the main directory:** `cd AssureX_Clain_system_AL-ML-`
 
-```bash
-git clone https://github.com/AssureX-Engine/AssureX-Claim-Engine.git
-cd AssureX-Claim-Engine
+### Backend Setup
+1. **Create a virtual environment:** `python -m venv .venv`
+4. **Activate the virtual environment:** 
+   - Windows: `.venv\Scripts\activate`
+   - Mac/Linux: `source .venv/bin/activate`
+5. **Install dependencies:** `pip install -r requirements.txt`
+6. **Initialize Database:** The SQLite database `assurex.db` will be auto-generated on the first run.
+7. **Environment Variables:** Create a `.env` file containing your secret keys.
+8. **Run Backend:** `uvicorn src.main:app --host 0.0.0.0 --port 8000` (or double-click `run_backend.bat`).
 
-python -m venv venv
-
-# Windows:
-.\venv\Scripts\Activate.ps1
-# Mac/Linux:
-source venv/bin/activate
-
-pip install -r requirements.txt
-```
-
----
-
-## Execution Guide
-
-### 1. Initialize Database
-```bash
-python -m src.scripts.init_db
-```
-
-### 2. Train Tabular ML Models
-```bash
-python -m src.ml.train --train data/train/claims_train.csv --val data/validation/claims_validation.csv
-```
-
-### 3. Start the FastAPI Server
-```bash
-uvicorn src.main:app --host 127.0.0.1 --port 8000 --reload
-```
-API Docs: **`http://127.0.0.1:8000/docs`**  
-Web Dashboard: **`http://127.0.0.1:8000/`**
+### Frontend Setup
+1. **Navigate to the frontend directory:** `cd frontend`
+2. **Install dependencies:** `npm install`
+4. **Configure Environment:** Create a `.env` file and set `VITE_API_URL=http://localhost:8000/api/v1` (or your Ngrok URL).
+5. **Run Frontend:** `npm run dev` (or double-click `run_frontend.bat`).
 
 ---
 
-## REST API Documentation
+## ⚙️ Execution Instructions
 
-### Evaluate Claim Endpoint
-- **Endpoint:** `POST /api/v1/claims/evaluate`
-- **Request Body Example:**
-```json
-{
-  "claim_id": "CLM-2024-9012",
-  "product_id": "PRD-ELE-27927",
-  "serial_number": "ELC-SAM-904751",
-  "purchase_date": "2024-03-10",
-  "claim_submission_date": "2024-08-15"
-}
-```
+1. **Register/Login:** Navigate to the homepage and log in using the credentials provided above.
+2. **Register a Product:** Go to 'My Products' -> 'Add Product'. Fill in the serial number and purchase details.
+3. **Submit a Claim:** Click 'File a Claim'. You will be prompted to upload a receipt and images of the damaged product.
+4. **OCR Extraction:** The system will automatically extract text from your uploaded receipt via Tesseract. Review the extracted data.
+5. **AI Evaluation:** Upon submission, the backend triggers the XGBoost model for structured data evaluation, while the frontend/backend invokes the GTM Vision model for image evaluation.
+6. **Reviewer Dashboard:** Log in as a Reviewer. Navigate to the 'Review Queue' to see claims flagged due to Model Contradiction or Rule Violation (e.g., duplicate serial numbers).
+7. **Admin Dashboard:** Log in as an Admin to view analytics, system health, and overall claim resolution rates.
 
 ---
 
-## License
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+## 🛑 Known Limitations & Assumptions
+- **OCR Accuracy:** Highly dependent on the lighting and quality of the uploaded receipt. Crumpled receipts may result in partial text extraction.
+- **Model Variance:** The Python model is trained on a synthetic dataset (with 8% realistic noise). It simulates real-world behavior but is limited to the statistical boundaries of the generated data.
+- **Assumption:** Teachable Machine models run best on desktop browsers with sufficient RAM.
+
+## 📄 Documentation
+All project reports, UML diagrams, test cases, and model comparison reports are located in the `documentation/` directory.
+
+---
+*Developed for the Aptech NextWave AI and ML Competition.*

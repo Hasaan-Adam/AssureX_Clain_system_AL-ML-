@@ -39,7 +39,6 @@ def test_submit_claim_invalid_warranty(client, customer_headers):
 
 def test_claim_status_transitions(client, reviewer_headers, customer_headers, sample_warranty):
     """Test claim status lifecycle transition by reviewer."""
-    # Submit claim
     payload = {
         "warranty_id": sample_warranty.id,
         "fault_type": "Speaker Buzzing",
@@ -49,7 +48,6 @@ def test_claim_status_transitions(client, reviewer_headers, customer_headers, sa
     create_res = client.post("/api/v1/claims/", json=payload, headers=customer_headers)
     claim_id = create_res.json()["id"]
 
-    # Transition to under_review
     trans_payload = {
         "status": "under_review",
         "notes": "Assigned for manual technician inspection.",
@@ -58,7 +56,6 @@ def test_claim_status_transitions(client, reviewer_headers, customer_headers, sa
     assert trans_res.status_code == 200
     assert trans_res.json()["status"] == "under_review"
 
-    # Transition to approved
     app_payload = {"status": "approved", "reason": "Defect confirmed under warranty."}
     app_res = client.put(f"/api/v1/claims/{claim_id}/status", json=app_payload, headers=reviewer_headers)
     assert app_res.status_code == 200
@@ -68,7 +65,6 @@ def test_claim_status_transitions(client, reviewer_headers, customer_headers, sa
 
 def test_claim_appeal_workflow(client, reviewer_headers, customer_headers, sample_warranty):
     """Test customer appealing a rejected claim."""
-    # Submit claim
     payload = {
         "warranty_id": sample_warranty.id,
         "fault_type": "Power Glitch",
@@ -78,14 +74,12 @@ def test_claim_appeal_workflow(client, reviewer_headers, customer_headers, sampl
     create_res = client.post("/api/v1/claims/", json=payload, headers=customer_headers)
     claim_id = create_res.json()["id"]
 
-    # Reject claim
     client.put(
         f"/api/v1/claims/{claim_id}/status",
         json={"status": "rejected", "reason": "Insufficient diagnostics"},
         headers=reviewer_headers,
     )
 
-    # Customer submits appeal
     appeal_payload = {
         "appeal_notes": "Attached certified diagnostics report from authorized repair center.",
     }

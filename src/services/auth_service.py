@@ -31,7 +31,6 @@ def register_user(
         from src.core.exceptions import ConflictError
         raise ConflictError(f"User with email '{user_data.email}' already exists.")
 
-    # Normalize role
     role = (user_data.role or UserRole.CUSTOMER.value).lower().strip()
     if role not in [r.value for r in UserRole]:
         role = UserRole.CUSTOMER.value
@@ -49,7 +48,6 @@ def register_user(
     db.commit()
     db.refresh(new_user)
 
-    # Log audit event
     log_action(
         db=db,
         action="USER_REGISTER",
@@ -81,7 +79,6 @@ def authenticate_user(
         from src.core.exceptions import UnauthorizedException
         raise UnauthorizedException("User account is inactive or disabled.")
 
-    # Log successful login
     log_action(
         db=db,
         action="USER_LOGIN",

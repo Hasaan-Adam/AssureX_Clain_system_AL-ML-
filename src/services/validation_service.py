@@ -13,7 +13,6 @@ def validate_claim_payload(claim_data: Dict[str, Any]) -> Dict[str, Any]:
     errors = []
     warnings = []
     
-    # Required fields
     required = [
         "claimant_id", "product_id", "fault_occurrence_date",
         "fault_type", "claim_submission_date"
@@ -22,7 +21,6 @@ def validate_claim_payload(claim_data: Dict[str, Any]) -> Dict[str, Any]:
         if field not in claim_data or not claim_data[field]:
             errors.append(f"Missing required field: {field}")
     
-    # Date validations
     if "fault_occurrence_date" in claim_data:
         try:
             fault = pd.to_datetime(claim_data["fault_occurrence_date"]).date()
@@ -37,7 +35,6 @@ def validate_claim_payload(claim_data: Dict[str, Any]) -> Dict[str, Any]:
         except:
             errors.append("Invalid fault_occurrence_date format")
     
-    # Numeric validations
     if "purchase_price" in claim_data:
         try:
             price = float(claim_data["purchase_price"])

@@ -284,12 +284,10 @@ def update_user_role(user_id: int, user_update: UserUpdate, db: Optional[Session
 def update_user_status(user_id: int, db: Optional[Session] = None) -> bool:
     return deactivate_user(user_id, db)
 
-# Database seeding function (call explicitly from seed script or app startup)
 def seed_database():
     """Seed database with default users if not already present."""
     db = SessionLocal()
     try:
-        # Check if admin user exists
         admin = db.query(User).filter(User.email == "admin@assurex.com").first()
         if not admin:
             from src.core.security import get_password_hash
@@ -303,7 +301,6 @@ def seed_database():
             )
             db.add(admin)
             
-            # Create demo users
             demo_users = [
                 {"email": "customer@assurex.com", "password": "customer123", "full_name": "Demo Customer", "role": "customer"},
                 {"email": "staff@assurex.com", "password": "staff123", "full_name": "Demo Service Staff", "role": "service_staff"},

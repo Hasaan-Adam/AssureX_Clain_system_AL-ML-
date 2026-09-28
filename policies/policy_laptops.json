@@ -1,0 +1,16 @@
+{
+  "product_category": "Laptops",
+  "coverage_duration_days": 730,
+  "warranty_start_conditions": "Date of Activation",
+  "covered_faults": ["Keyboard Malfunction", "Display Dead Pixels", "Overheating"],
+  "exclusions": ["Spill Damage", "Drops", "Third-party RAM Upgrades"],
+  "claim_reporting_period_days": 15,
+  "repair_conditions": "Send-in depot repair only",
+  "authorized_service_centre_requirements": true,
+  "replacement_conditions": "3 identical failures in 1 year",
+  "grace_periods_days": 14,
+  "mandatory_documents": ["Purchase Receipt", "Diagnostic Report"],
+  "hard_fail_rules": ["Warranty Expired", "Water Damage Detected"],
+  "warning_rules": ["Non-original Charger Used"],
+  "manual_review_rules": ["Claim Amount > $1500"]
+}

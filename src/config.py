@@ -20,9 +20,6 @@ def _load_yaml(file_path: Path) -> Dict[str, Any]:
         return yaml.safe_load(f) or {}
 
 
-# ---------------------------------------------------------
-# Sub-Models for YAML Config Sections
-# ---------------------------------------------------------
 
 class AppInfo(BaseModel):
     name: str = "AssureX Claim Engine"
@@ -97,9 +94,6 @@ class EmailInfo(BaseModel):
     from_name: str = "AssureX Claims Support"
 
 
-# ---------------------------------------------------------
-# Thresholds Config Sub-Models
-# ---------------------------------------------------------
 
 class AIComparisonThresholds(BaseModel):
     strong_match_delta: float = 0.10
@@ -156,9 +150,6 @@ class ThresholdConfig(BaseModel):
     ocr_matching: OCRMatchingRules = Field(default_factory=OCRMatchingRules)
 
 
-# ---------------------------------------------------------
-# Alerts Config Sub-Models
-# ---------------------------------------------------------
 
 class WarrantyExpiryAlertConfig(BaseModel):
     alert_days: List[int] = [30, 15, 7, 0]
@@ -187,18 +178,12 @@ class AlertSettingsConfig(BaseModel):
     channels: ChannelsConfig = Field(default_factory=ChannelsConfig)
 
 
-# ---------------------------------------------------------
-# Monitoring Config Sub-Models
-# ---------------------------------------------------------
 
 class MonitoringConfig(BaseModel):
     anomaly_thresholds: Dict[str, Any] = Field(default_factory=dict)
     system_health: Dict[str, Any] = Field(default_factory=dict)
 
 
-# ---------------------------------------------------------
-# Root Settings Class
-# ---------------------------------------------------------
 
 class Settings(BaseSettings):
     """
@@ -211,7 +196,6 @@ class Settings(BaseSettings):
         env_nested_delimiter="__",
     )
 
-    # Base sections
     app: AppInfo = Field(default_factory=AppInfo)
     server: ServerInfo = Field(default_factory=ServerInfo)
     database: DatabaseInfo = Field(default_factory=DatabaseInfo)
@@ -221,12 +205,10 @@ class Settings(BaseSettings):
     uploads: UploadsInfo = Field(default_factory=UploadsInfo)
     email: EmailInfo = Field(default_factory=EmailInfo)
 
-    # Thresholds, alerts, monitoring configs
     thresholds: ThresholdConfig = Field(default_factory=ThresholdConfig)
     alerts: AlertSettingsConfig = Field(default_factory=AlertSettingsConfig)
     monitoring: MonitoringConfig = Field(default_factory=MonitoringConfig)
 
-    # Direct top-level shortcuts for convenience
     DATABASE_URL: Optional[str] = None
     SECRET_KEY: Optional[str] = None
     ENVIRONMENT: Optional[str] = None
@@ -250,7 +232,6 @@ def get_settings() -> Settings:
         "monitoring": monitoring_yaml,
     }
 
-    # Environment variable overrides
     if db_url := os.getenv("DATABASE_URL"):
         merged_data.setdefault("database", {})["url"] = db_url
         merged_data["DATABASE_URL"] = db_url
@@ -266,5 +247,4 @@ def get_settings() -> Settings:
     return Settings(**merged_data)
 
 
-# Global settings instance
 settings = get_settings()

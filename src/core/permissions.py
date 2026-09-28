@@ -11,7 +11,6 @@ from src.core.exceptions import ForbiddenException
 from src.utils.constants import RoleEnum, normalize_role
 
 
-# Fallback permissions matrix if config file is not loaded
 DEFAULT_ROLE_HIERARCHY: Dict[str, Set[str]] = {
     RoleEnum.CUSTOMER.value: {
         "claims:create",
@@ -90,11 +89,9 @@ def load_roles_config(roles_file_path: Optional[str] = None) -> Dict[str, Set[st
     """
     path = Path(roles_file_path) if roles_file_path else Path("config/roles.yaml")
     if not path.exists():
-        # Fallback to accumulated hierarchy
         merged: Dict[str, Set[str]] = {}
         for role, rank in sorted(ROLE_RANK.items(), key=lambda x: x[1]):
             role_perms = set(DEFAULT_ROLE_HIERARCHY.get(role, set()))
-            # Customer perms inherit up
             if rank >= 20:
                 role_perms |= DEFAULT_ROLE_HIERARCHY.get(RoleEnum.CUSTOMER.value, set())
             if rank >= 30:
@@ -132,7 +129,6 @@ def load_roles_config(roles_file_path: Optional[str] = None) -> Dict[str, Set[st
 
         return resolved
     except Exception:
-        # Fallback if parse fails
         return {r: set(perms) for r, perms in DEFAULT_ROLE_HIERARCHY.items()}
 
 

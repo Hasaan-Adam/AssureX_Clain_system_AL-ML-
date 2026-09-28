@@ -27,12 +27,10 @@ def adjudicate_claim(claim_data: Dict[str, Any]) -> Dict[str, Any]:
     rule_eng = RuleEngine()
     rule_res = rule_eng.evaluate_claim(claim_data)
     
-    # ML Tabular prediction
     ml_res = predict_tabular_claim(claim_data)
     pred_class = ml_res.get("predicted_class", "Valid Claim")
     confidence = ml_res.get("confidence", 0.90)
     
-    # Excluded damage check
     excluded = claim_data.get("excluded_damage") == "yes" or claim_data.get("damage_type") in ("PHYSICAL_IMPACT", "LIQUID_SPILL", "UNAUTHORIZED_REPAIR")
     
     if rule_res.get("violation_count", 0) > 0 or excluded:
@@ -116,27 +114,21 @@ def make_final_decision(
     HIGH_CONF = 0.80
     LOW_CONF = 0.60
     
-    # 1. Hard rule violations -> Likely Invalid
     if rule_violations > 0:
         return "Likely Invalid"
     
-    # 2. Strong model disagreement -> Manual Review
     if consistency == "Disagreement" or not classes_match:
         return "Manual Review Required"
     
-    # 3. Low confidence -> Manual Review
     if py_conf < LOW_CONF or tm_conf < LOW_CONF:
         return "Manual Review Required"
     
-    # 4. Rule warnings -> Manual Review
     if rule_warnings > 0:
         return "Manual Review Required"
     
-    # 5. Weak consistency -> Manual Review
     if consistency in ("Weak", "Weak Match", "Uncertain") or comparison_result.get("max_delta", 0) > 0.25:
         return "Manual Review Required"
     
-    # 6. Strong agreement + rules pass -> Check Predicted Class
     if consistency in ("Strong Match", "Acceptable", "Acceptable Match") and classes_match:
         if "Invalid" in py_class or "Invalid" in tm_class:
             return "Likely Invalid"

@@ -55,7 +55,6 @@ def register_model_version(
     registered_by: Optional[int] = None,
 ) -> ModelVersion:
     """Register a new model version."""
-    # Archive previous active
     db.query(ModelVersion).filter(ModelVersion.status == "active").update({"status": "archived"})
     
     mv = ModelVersion(

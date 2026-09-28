@@ -51,25 +51,19 @@ class Settings(BaseSettings):
         protected_namespaces=(),
     )
 
-    # App
     app_name: str = "AssureX Claim Engine"
     debug: bool = True
     host: str = "0.0.0.0"
     port: int = 8000
 
-    # Database
     database: DatabaseSettings = DatabaseSettings()
 
-    # Security
     security: SecuritySettings = SecuritySettings()
 
-    # TM Model
     tm_model: TMModelSettings = TMModelSettings()
 
-    # ML Model
     ml_model: MLModelSettings = MLModelSettings()
 
-    # CORS
     cors_origins: List[str] = ["*"]
 
     @classmethod
@@ -83,7 +77,6 @@ class Settings(BaseSettings):
         return cls()
 
 
-# Global settings instance
 settings = Settings.load_from_yaml()
 
 

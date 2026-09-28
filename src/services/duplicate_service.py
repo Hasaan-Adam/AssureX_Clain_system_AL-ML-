@@ -17,7 +17,6 @@ def check_duplicate_claim(
     """
     Check for duplicate claims across DB records or in-memory historical claims.
     """
-    # 1. In-memory history check
     if claim_history is not None:
         target_claim = db_or_claim if isinstance(db_or_claim, dict) else (claim_data or {})
         matching = []
@@ -41,7 +40,6 @@ def check_duplicate_claim(
             }
         return {"is_duplicate": False, "matching_claim_numbers": [], "duplicate_count": 0}
 
-    # 2. Direct DB session check by warranty_id and fault_type
     if isinstance(db_or_claim, Session):
         db = db_or_claim
         wid = warranty_id or (claim_data.get("warranty_id") if claim_data else None)
@@ -64,7 +62,6 @@ def check_duplicate_claim(
             }
         return {"is_duplicate": False, "matching_claim_numbers": [], "duplicate_count": 0}
 
-    # 3. Dict-based check
     claim_dict = db_or_claim if isinstance(db_or_claim, dict) else (claim_data or {})
     if claim_dict.get("is_duplicate") in ("yes", True):
         return {"is_duplicate": True, "reason": "Claim flagged as duplicate.", "matching_claim_numbers": [], "duplicate_count": 1}
@@ -81,7 +78,6 @@ def check_duplicate_document(
     """
     Check if a document SHA-256 hash has already been used in previous claims.
     """
-    # 1. In-memory list check
     target_hash = db_or_hash if isinstance(db_or_hash, str) else file_hash
     if existing_hashes is not None:
         if target_hash in existing_hashes:
@@ -94,7 +90,6 @@ def check_duplicate_document(
             }
         return {"is_duplicate": False, "duplicate_type": None, "match_count": 0}
 
-    # 2. Database query check
     if isinstance(db_or_hash, Session):
         db = db_or_hash
         target = file_hash or kwargs.get("hash")

@@ -63,7 +63,6 @@ def test_verify_serial_endpoint(client, sample_warranty):
 def test_warranty_expiry_alerts(client, test_db, admin_headers, customer_user, sample_product):
     """Test expiry alert notification generator."""
     today = date.today()
-    # Create warranty expiring in 7 days (matches alert_days: [30, 15, 7, 0])
     w = sample_product
     from src.models.warranty import Warranty
     expiring_warranty = Warranty(
@@ -80,7 +79,6 @@ def test_warranty_expiry_alerts(client, test_db, admin_headers, customer_user, s
     test_db.add(expiring_warranty)
     test_db.commit()
 
-    # Trigger alert check
     result = generate_expiry_alerts(test_db)
     assert result["alerts_generated"] >= 1
     assert any(d["warranty_number"] == "WRN-ALERT-007" for d in result["details"])

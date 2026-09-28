@@ -130,9 +130,6 @@ def test_delta_calculation_exact():
         "probabilities": {"Valid Claim": 0.70, "Invalid Claim": 0.22, "Manual Review": 0.08},
     }
     res = compare_models(py_pred, tm_prediction=tm_pred)
-    # Deltas: Valid Claim = |0.80 - 0.70| = 0.10
-    # Invalid Claim = |0.15 - 0.22| = 0.07
-    # Manual Review = |0.05 - 0.08| = 0.03
     assert res["deltas"]["Valid Claim"] == pytest.approx(0.10, rel=1e-3)
     assert res["deltas"]["Invalid Claim"] == pytest.approx(0.07, rel=1e-3)
     assert res["deltas"]["Manual Review"] == pytest.approx(0.03, rel=1e-3)

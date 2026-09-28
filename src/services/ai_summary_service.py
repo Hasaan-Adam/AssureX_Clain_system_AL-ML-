@@ -7,21 +7,18 @@ def summarize_claim(claim_data: Dict[str, Any], max_length: int = 200) -> str:
     """Generate a concise claim summary."""
     parts = []
     
-    # Product
     product = claim_data.get("product_name", "Product")
     brand = claim_data.get("brand", "")
     if brand:
         product = f"{brand} {product}"
     parts.append(f"Product: {product}")
     
-    # Warranty
     remaining = claim_data.get("remaining_warranty_days", 0)
     if remaining >= 0:
         parts.append(f"Warranty: {remaining} days remaining")
     else:
         parts.append(f"Warranty: Expired {abs(remaining)} days ago")
     
-    # Fault
     fault = claim_data.get("fault_type", "Unknown fault")
     fault_desc = claim_data.get("fault_description", "")
     if fault_desc:
@@ -29,22 +26,18 @@ def summarize_claim(claim_data: Dict[str, Any], max_length: int = 200) -> str:
     else:
         parts.append(f"Fault: {fault}")
     
-    # Repair history
     repair_count = claim_data.get("repair_history_count", 0)
     if repair_count > 0:
         auth = claim_data.get("repair_authorized", "none")
         parts.append(f"Repairs: {repair_count} ({auth})")
     
-    # Documents
     missing = claim_data.get("missing_document_count", 0)
     if missing > 0:
         parts.append(f"Missing documents: {missing}")
     
-    # Contradictions
     if claim_data.get("has_contradiction") == "yes":
         parts.append(f"Contradiction: {claim_data.get('contradiction_type', 'unknown')}")
     
-    # Serial
     serial = claim_data.get("serial_status", "match")
     if serial != "match":
         parts.append(f"Serial: {serial}")

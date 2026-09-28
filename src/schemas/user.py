@@ -91,7 +91,6 @@ class UserOut(BaseModel):
     model_config = {'from_attributes': True}
 
 
-# Alias for compatibility
 UserResponse = UserOut
 
 
@@ -116,7 +115,6 @@ class TokenPayload(BaseModel):
     exp: int
 
 
-# Additional schemas for API compatibility
 class PasswordChangeRequest(BaseModel):
     current_password: str
     new_password: str = Field(..., min_length=8, max_length=72)

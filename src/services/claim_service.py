@@ -37,14 +37,12 @@ def create_claim(
     product_id = data_dict.get("product_id")
     warranty_id = data_dict.get("warranty_id")
 
-    # If warranty_id provided but product_id missing, lookup from warranty
     if not product_id and warranty_id:
         warranty = db.query(Warranty).filter(Warranty.id == warranty_id).first()
         if not warranty:
             raise NotFoundError("Warranty", warranty_id)
         product_id = warranty.product_id
 
-    # If product_id provided but warranty_id missing, lookup from product
     if product_id and not warranty_id:
         warranty = db.query(Warranty).filter(Warranty.product_id == product_id).first()
         warranty_id = warranty.id if warranty else None
@@ -110,7 +108,6 @@ def create_claim(
         },
     )
 
-    # 1. Trigger automated adjudication if requested
     if auto_adjudicate:
         try:
             from src.services.prediction_service import adjudicate_claim
@@ -122,7 +119,6 @@ def create_claim(
             db.commit()
             db.refresh(claim)
 
-    # 2. In-App Notification for Claimant
     try:
         from src.services.notification_service import create_notification, notify_all_reviewers
         create_notification(
@@ -135,7 +131,6 @@ def create_claim(
             related_entity_id=str(claim.id),
         )
         
-        # 3. In-App Notification for Reviewers
         notify_all_reviewers(
             db=db,
             title=f"New Claim: {claim.claim_id}",
@@ -146,7 +141,6 @@ def create_claim(
     except Exception:
         pass
 
-    # 4. Email Alert for Claimant
     try:
         from src.services.email_service import send_claim_submission_email
         user = db.query(User).filter(User.id == user_id).first()
@@ -246,8 +240,6 @@ def list_claims(
                 query = query.filter(column >= parsed) if operator == "ge" else query.filter(column <= parsed)
 
     if risk_level or min_confidence is not None or max_confidence is not None:
-        # Confidence / risk live in the prediction rows, so filter in Python to
-        # keep the criteria consistent with the properties exposed to the API.
         candidates = query.all()
         wanted_risk = (risk_level or "").strip().lower()
         filtered = []
@@ -305,7 +297,6 @@ def transition_claim_status(
         claim.decided_at = datetime.utcnow()
         claim.rejection_reason = reason or notes
     elif target in ("under_review", "manual_review", "escalated", "submitted"):
-        # A human decision supersedes the automated model outcome.
         claim.final_decision = "MANUAL_REVIEW"
     elif target == "closed":
         claim.final_decision = claim.final_decision or "APPROVE"
@@ -315,7 +306,6 @@ def transition_claim_status(
     db.commit()
     db.refresh(claim)
 
-    # In-App Notification & Email
     try:
         from src.services.notification_service import create_notification
         from src.services.email_service import send_claim_decision_email
@@ -453,7 +443,6 @@ def delete_claim(db: Session, claim_id: int, user_id: Optional[int] = None, role
     return {"deleted": True, "claim_number": claim_number, "message": f"Claim {claim_number} deleted."}
 
 
-#: Claim lifecycle stages required by SRS xxxviii.
 CLAIM_STATUS_FLOW = [
     ("draft", "Draft"),
     ("submitted", "Submitted"),

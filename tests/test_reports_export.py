@@ -7,7 +7,6 @@ import pytest
 
 def test_claim_pdf_report_download(client, customer_headers, sample_warranty):
     """Test generating and downloading PDF claim adjudication report."""
-    # Submit claim
     create_res = client.post(
         "/api/v1/claims/",
         json={

@@ -4,7 +4,6 @@ AssureX Claim Engine - Services Package
 Lazy imports to avoid circular dependencies.
 """
 
-# Core services (no circular deps)
 from src.services.user_service import (
     create_user,
     get_user_by_email,
@@ -25,7 +24,6 @@ from src.services.auth_service import (
     validate_token,
 )
 
-# Lazy-loaded services (import on demand)
 def get_claim_service():
     from src.services.claim_service import (
         create_claim,
@@ -270,14 +268,11 @@ def get_alert_service():
     from src.services.alert_service import check_system_anomalies
     return {"check_system_anomalies": check_system_anomalies}
 
-# Export commonly used functions directly
 __all__ = [
-    # User/Auth
     "create_user", "get_user_by_email", "get_user_by_id", "list_users",
     "update_profile", "update_user_role", "update_user_status", "change_password",
     "register_user", "authenticate_user", "create_user_tokens",
     "refresh_access_token", "validate_token",
-    # Lazy loaders
     "get_claim_service", "get_product_service", "get_warranty_service",
     "get_document_service", "get_prediction_service", "get_rule_engine",
     "get_comparison_service", "get_decision_service", "get_explanation_service",

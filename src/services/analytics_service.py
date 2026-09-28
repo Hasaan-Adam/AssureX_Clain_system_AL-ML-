@@ -16,7 +16,6 @@ from sqlalchemy.orm import Session
 
 from database.models import Claim, Prediction, Product, Warranty
 
-#: Claim statuses that count as approved / rejected / awaiting a human decision.
 APPROVED_STATUSES = ("approved", "auto_approved", "settled")
 REJECTED_STATUSES = ("rejected",)
 PENDING_STATUSES = (

@@ -10,7 +10,6 @@ def compute_derived_fields(claim_data: Dict[str, Any]) -> Dict[str, Any]:
     """Compute all derived fields for a claim."""
     result = dict(claim_data)
     
-    # Product age
     if "purchase_date" in claim_data and "claim_submission_date" in claim_data:
         try:
             purchase = pd.to_datetime(claim_data["purchase_date"])
@@ -19,7 +18,6 @@ def compute_derived_fields(claim_data: Dict[str, Any]) -> Dict[str, Any]:
         except:
             result["product_age_days"] = 0
     
-    # Remaining warranty
     if "warranty_expiry_date" in claim_data and "claim_submission_date" in claim_data:
         try:
             expiry = pd.to_datetime(claim_data["warranty_expiry_date"])
@@ -28,7 +26,6 @@ def compute_derived_fields(claim_data: Dict[str, Any]) -> Dict[str, Any]:
         except:
             result["remaining_warranty_days"] = 0
     
-    # Claim reporting days
     if "fault_occurrence_date" in claim_data and "claim_submission_date" in claim_data:
         try:
             fault = pd.to_datetime(claim_data["fault_occurrence_date"])
@@ -37,25 +34,18 @@ def compute_derived_fields(claim_data: Dict[str, Any]) -> Dict[str, Any]:
         except:
             result["claim_reporting_days"] = 0
     
-    # Within reporting period
     result["within_reporting_period"] = "yes" if result.get("claim_reporting_days", 0) <= 30 else "no"
     
-    # Remaining warranty days
     rem = result.get("remaining_warranty_days", 0)
     
-    # Warranty active (string yes/no)
     result["warranty_active"] = "yes" if rem >= 0 else "no"
     
-    # Days past expiry
     result["days_past_expiry"] = max(0, -rem)
     
-    # Grace period (integer flag 1/0)
     result["is_grace_period"] = 1 if -30 <= rem < 0 else 0
     
-    # Reporting overdue (integer flag 1/0)
     result["is_reporting_overdue"] = 1 if result.get("claim_reporting_days", 0) > 30 else 0
     
-    # Repair frequency
     if "product_age_days" in result and result["product_age_days"] > 0:
         repair_count = claim_data.get("repair_history_count", 0)
         age_years = max(result["product_age_days"] / 365.25, 0.01)
@@ -63,7 +53,6 @@ def compute_derived_fields(claim_data: Dict[str, Any]) -> Dict[str, Any]:
     else:
         result["repair_frequency"] = 0
     
-    # Price per month
     if "purchase_price" in claim_data and "warranty_duration_months" in claim_data:
         months = max(claim_data.get("warranty_duration_months", 1), 1)
         result["price_per_month"] = claim_data["purchase_price"] / months
@@ -77,7 +66,6 @@ def prepare_features_for_ml(claim_data: Dict[str, Any]) -> Dict[str, Any]:
     """Prepare features for ML model."""
     enriched = compute_derived_fields(claim_data)
     
-    # Boolean features
     boolean_map = {
         "covered_fault": "yes",
         "within_reporting_period": "yes",

@@ -87,7 +87,6 @@ def test_compare_serials_missing_evidence():
 
 def test_verify_claim_serial_scenarios():
     """Verify verify_claim_serial with claim payload dicts."""
-    # Match claim
     claim_valid = {
         "serial_number": "ELC-DEL-984830",
         "serial_status": "match",
@@ -97,7 +96,6 @@ def test_verify_claim_serial_scenarios():
     assert res_valid["status"] == "match"
     assert res_valid["is_valid"] is True
 
-    # Missing evidence claim
     claim_no_evidence = {
         "serial_number": "ELC-DEL-984830",
         "serial_evidence_available": "no",
@@ -106,7 +104,6 @@ def test_verify_claim_serial_scenarios():
     assert res_no_ev["status"] == "missing_evidence"
     assert res_no_ev["is_valid"] is False
 
-    # Mismatch claim
     claim_mismatch = {
         "serial_number": "ELC-DEL-984830",
         "serial_status": "mismatch",

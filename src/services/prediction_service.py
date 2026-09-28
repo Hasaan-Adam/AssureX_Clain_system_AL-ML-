@@ -32,12 +32,10 @@ def adjudicate_claim(db: Session, claim_id: int, claim_data: Dict[str, Any]) -> 
     from database.models import RepairHistory
     from src.services.contradiction_service import detect_contradictions
 
-    # Query real repair history from database if available
     prior_repairs = db.query(RepairHistory).join(Claim, RepairHistory.claim_id == Claim.id).filter(Claim.product_id == claim.product_id).all() if claim.product_id else []
     repair_count = len(prior_repairs) if prior_repairs else int(claim_data.get("repair_history_count") or 0)
     repair_auth = "no" if any(r.authorized_status == "no" for r in prior_repairs) else claim_data.get("repair_authorized", "yes")
 
-    # Enrich dictionary with all product and warranty facts for ML model and rule engine
     enriched_data = dict(claim_data)
     enriched_data["claim_id"] = claim.claim_id
     enriched_data["product_id"] = claim.product_id
@@ -58,34 +56,26 @@ def adjudicate_claim(db: Session, claim_id: int, claim_data: Dict[str, Any]) -> 
     enriched_data["repair_history_count"] = repair_count
     enriched_data["repair_authorized"] = repair_auth
     
-    # Detect real logical contradictions
     contradiction_eval = detect_contradictions(enriched_data)
     enriched_data["contradiction_type"] = contradiction_eval.get("contradiction_type", "none")
     enriched_data["ocr_quality"] = "high" if claim.documents else "missing"
     
-    # 1. Python ML Prediction (using trained XGBoost/RandomForest)
     py_result = predict_claim(enriched_data)
     
-    # 2. TM Prediction (Vision Model / Dual Consensus)
     tm_result = claim_data.get("tm_prediction", {})
     if tm_result:
         tm_result = accept_frontend_tm_result(tm_result)
     else:
-        # Generate actual TM vision inference using trained model weights
         from src.services.tm_service import get_tm_model
         tm_model = get_tm_model()
         tm_result = tm_model.predict_from_features(enriched_data)
     
-    # 3. Model Comparison
     comparison = compare_models(py_result, tm_result)
     
-    # 4. Rule Engine
     rule_result = evaluate_rules(enriched_data)
     
-    # 5. Final Decision
     final_decision = make_final_decision(py_result, tm_result, comparison, rule_result)
     
-    # Save prediction record with clean JSON serialization
     prediction = Prediction(
         claim_id=claim_id,
         python_predicted_class=py_result.get("predicted_class"),
@@ -104,7 +94,6 @@ def adjudicate_claim(db: Session, claim_id: int, claim_data: Dict[str, Any]) -> 
     )
     db.add(prediction)
     
-    # Update claim
     claim.python_prediction = py_result.get("predicted_class")
     claim.python_confidence = json.dumps(py_result.get("probabilities", {}))
     claim.tm_prediction = tm_result.get("predicted_class")

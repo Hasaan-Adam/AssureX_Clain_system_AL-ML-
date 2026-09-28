@@ -11,12 +11,10 @@ def test_full_claim_engine_lifecycle(client):
     """
     Complete end-to-end integration test of AssureX Engine across all services & API routes.
     """
-    # 1. Health check
     health_res = client.get("/api/v1/health")
     assert health_res.status_code == 200
     assert health_res.json()["status"] == "healthy"
 
-    # 2. Register Customer
     cust_res = client.post(
         "/api/v1/auth/register",
         json={
@@ -29,7 +27,6 @@ def test_full_claim_engine_lifecycle(client):
     assert cust_res.status_code == 201
     cust_id = cust_res.json()["id"]
 
-    # 3. Login as Customer
     login_res = client.post(
         "/api/v1/auth/login",
         json={"email": "e2e_customer@assurex.com", "password": "Password123!"},
@@ -38,7 +35,6 @@ def test_full_claim_engine_lifecycle(client):
     cust_token = login_res.json()["access_token"]
     cust_headers = {"Authorization": f"Bearer {cust_token}"}
 
-    # 4. Register Admin
     admin_res = client.post(
         "/api/v1/auth/register",
         json={
@@ -57,7 +53,6 @@ def test_full_claim_engine_lifecycle(client):
     admin_token = admin_login.json()["access_token"]
     admin_headers = {"Authorization": f"Bearer {admin_token}"}
 
-    # 5. Admin creates Product
     prod_res = client.post(
         "/api/v1/products/",
         json={
@@ -72,7 +67,6 @@ def test_full_claim_engine_lifecycle(client):
     assert prod_res.status_code == 201
     product_id = prod_res.json()["id"]
 
-    # 6. Customer registers Warranty
     today = date.today()
     w_res = client.post(
         "/api/v1/warranties/",
@@ -87,7 +81,6 @@ def test_full_claim_engine_lifecycle(client):
     assert w_res.status_code == 201
     warranty_id = w_res.json()["id"]
 
-    # 7. Customer submits Claim
     claim_res = client.post(
         "/api/v1/claims/",
         json={
@@ -102,17 +95,14 @@ def test_full_claim_engine_lifecycle(client):
     claim_id = claim_res.json()["id"]
     claim_number = claim_res.json()["claim_number"]
 
-    # 8. Customer views their Dashboard
     dash_res = client.get("/api/v1/dashboard/user", headers=cust_headers)
     assert dash_res.status_code == 200
     assert dash_res.json()["total_claims"] >= 1
 
-    # 9. Admin views Admin Dashboard
     admin_dash = client.get("/api/v1/dashboard/admin", headers=admin_headers)
     assert admin_dash.status_code == 200
     assert admin_dash.json()["total_claims"] >= 1
 
-    # 10. Generate PDF Report
     pdf_res = client.get(f"/api/v1/reports/claim/{claim_id}/pdf", headers=cust_headers)
     assert pdf_res.status_code == 200
     assert pdf_res.content.startswith(b"%PDF")

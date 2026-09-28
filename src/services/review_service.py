@@ -111,7 +111,6 @@ def submit_review_decision(
     db.refresh(review)
     db.refresh(claim)
 
-    # Dispatch In-App Notification & Email to Claimant
     try:
         from src.services.notification_service import create_notification
         from src.services.email_service import send_claim_decision_email
@@ -192,7 +191,6 @@ def add_review_comment(
     db.refresh(review)
     user = db.query(User).filter(User.id == reviewer_id).first()
 
-    # In-App notification to claimant if comment was from staff
     try:
         if claim.claimant_id != reviewer_id:
             from src.services.notification_service import create_notification

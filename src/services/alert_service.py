@@ -12,7 +12,6 @@ def check_system_anomalies(db: Session) -> List[Dict[str, Any]]:
     """Check for live system anomalies across claims, documents, predictions, and models."""
     alerts = []
     
-    # 1. Unverified or Failed Uploads (last 24 hours)
     try:
         unverified_docs = db.query(Document).filter(
             Document.is_verified == False,
@@ -28,7 +27,6 @@ def check_system_anomalies(db: Session) -> List[Dict[str, Any]]:
     except Exception:
         pass
 
-    # 2. Duplicate Document Hash Clusters
     try:
         duplicate_hashes = (
             db.query(Document.file_hash, func.count(Document.id).label("hash_count"))
@@ -47,7 +45,6 @@ def check_system_anomalies(db: Session) -> List[Dict[str, Any]]:
     except Exception:
         pass
 
-    # 3. Unusual Claim Activity (High 24h surge)
     try:
         recent_claims = db.query(Claim).filter(
             Claim.claim_submission_date >= date.today() - timedelta(days=1)
@@ -62,7 +59,6 @@ def check_system_anomalies(db: Session) -> List[Dict[str, Any]]:
     except Exception:
         pass
 
-    # 4. High Risk Fraud Spike (claims with fraud_score >= 0.70 in last 24h)
     try:
         recent_claims = db.query(Claim).filter(
             Claim.claim_submission_date >= date.today() - timedelta(days=1)
@@ -78,7 +74,6 @@ def check_system_anomalies(db: Session) -> List[Dict[str, Any]]:
     except Exception:
         pass
 
-    # 5. Model Disagreement Frequency
     try:
         total_predictions = db.query(Prediction).count()
         if total_predictions >= 5:

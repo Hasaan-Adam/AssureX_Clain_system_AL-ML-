@@ -23,7 +23,6 @@ from src.utils.constants import RoleEnum
 
 router = APIRouter(prefix="/warranties", tags=["Warranties"])
 
-#: Roles allowed to administer any customer's warranty record.
 WARRANTY_ADMIN_ROLES = (RoleEnum.SERVICE_STAFF, RoleEnum.REVIEWER, RoleEnum.ADMIN)
 
 

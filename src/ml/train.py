@@ -15,7 +15,6 @@ from pathlib import Path
 import sys
 from typing import Any, Dict, List, Optional, Tuple
 
-# Ensure project root is in sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -123,12 +122,10 @@ def train_and_evaluate_models(
     logger.info(f"Loading validation data from: {val_csv}")
     val_df = pd.read_csv(val_csv)
 
-    # 1. Feature Engineering
     logger.info("Extracting features from train and validation sets...")
     X_train, y_train = extract_features_and_target(train_df, TARGET_COLUMN)
     X_val, y_val = extract_features_and_target(val_df, TARGET_COLUMN)
 
-    # 2. Preprocessing Pipeline (Fit & Save)
     logger.info("Fitting and saving preprocessor and label encoder...")
     preprocessor, label_encoder, X_train_trans, y_train_enc = fit_and_save_pipeline(
         X_train, y_train, DEFAULT_PREPROCESSOR_PATH, DEFAULT_LABEL_ENCODER_PATH
@@ -140,7 +137,6 @@ def train_and_evaluate_models(
     save_feature_columns_metadata(classes_list, DEFAULT_FEATURES_PATH)
     logger.info(f"Label classes: {classes_list}")
 
-    # 3. Model Training & Benchmarking
     candidate_models = get_candidate_models()
     benchmark_results: Dict[str, Dict[str, Any]] = {}
     best_name = None
@@ -152,12 +148,10 @@ def train_and_evaluate_models(
         logger.info(f"Training algorithm: {name}...")
         model.fit(X_train_trans, y_train_enc)
 
-        # Train metrics
         train_preds = model.predict(X_train_trans)
         train_acc = accuracy_score(y_train_enc, train_preds)
         train_f1 = f1_score(y_train_enc, train_preds, average="macro")
 
-        # Validation metrics
         val_preds = model.predict(X_val_trans)
         val_acc = accuracy_score(y_val_enc, val_preds)
         val_f1 = f1_score(y_val_enc, val_preds, average="macro")
@@ -176,7 +170,6 @@ def train_and_evaluate_models(
             f"Algorithm {name:20s} | Val Acc: {val_acc * 100:.2f}% | Val F1 (macro): {val_f1:.4f} | Val F1 (weighted): {val_f1_weighted:.4f}"
         )
 
-        # Selection criterion: Highest Validation F1 / Accuracy
         if val_f1 > best_val_f1:
             best_val_f1 = val_f1
             best_name = name
@@ -184,19 +177,16 @@ def train_and_evaluate_models(
 
     logger.info(f"--- Best Algorithm Selected: {best_name} (Validation F1: {best_val_f1:.4f}) ---")
 
-    # Check SRS Requirement (>= 85% accuracy)
     best_val_acc = benchmark_results[best_name]["val_accuracy"]
     if best_val_acc < 0.85:
         raise RuntimeError(
             f"Best model {best_name} achieved {best_val_acc * 100:.2f}% accuracy, which fails the SRS >= 85% requirement!"
         )
 
-    # 4. Save Best Model
     model_output_path.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(best_model, model_output_path)
     logger.info(f"Saved best model artifact to: {model_output_path.resolve()}")
 
-    # 5. Registry Entry & Model Card Update
     best_metrics = {
         "train_accuracy": benchmark_results[best_name]["train_accuracy"],
         "train_f1_macro": benchmark_results[best_name]["train_f1_macro"],

@@ -70,7 +70,6 @@ def verify_serial_number(
         else:
             return {"status": "match", "is_valid": True, "similarity": 1.0, "message": "Serial matches", "provided": serial}
     
-    # Otherwise serial_or_claim is serial1 string, expected_serial is serial2
     s1 = str(serial_or_claim).strip().upper() if serial_or_claim else ""
     s2 = str(expected_serial).strip().upper() if expected_serial else ""
     

@@ -156,5 +156,4 @@ def format_explanation_markdown(exp: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-# Alias
 generate_decision_explanation = generate_explanation

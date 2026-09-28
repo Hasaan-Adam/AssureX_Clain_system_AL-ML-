@@ -28,7 +28,6 @@ def test_admin_list_users(client, admin_headers, customer_user):
 
 def test_admin_update_user_role_and_status(client, admin_headers, customer_headers, customer_user):
     """Test admin changing role and status of user."""
-    # Update role using the legacy alias - it must be stored canonically.
     role_res = client.put(
         f"/api/v1/users/{customer_user.id}/role",
         json={"role": "staff"},
@@ -37,7 +36,6 @@ def test_admin_update_user_role_and_status(client, admin_headers, customer_heade
     assert role_res.status_code == 200
     assert role_res.json()["role"] == "service_staff"
 
-    # Update status
     status_res = client.put(
         f"/api/v1/users/{customer_user.id}/status",
         json={"is_active": False},
@@ -46,12 +44,10 @@ def test_admin_update_user_role_and_status(client, admin_headers, customer_heade
     assert status_res.status_code == 200
     assert status_res.json()["is_active"] is False
 
-    # A deactivated account must no longer be able to call the API.
     blocked = client.get("/api/v1/auth/me", headers=customer_headers)
     assert blocked.status_code == 403
 
 
-# --- Role Escalation & RBAC Boundary Protection Tests ---
 
 def test_customer_cannot_list_users(client, customer_headers):
     """Customer role attempting to access user directory must be rejected with 403."""
@@ -84,7 +80,6 @@ def test_customer_cannot_modify_user_status(client, customer_headers, customer_u
 
 def test_reviewer_and_staff_cannot_manage_roles(client, reviewer_headers, staff_headers, customer_user):
     """Non-admin roles cannot mutate user roles or permissions."""
-    # Reviewer
     res_rev = client.put(
         f"/api/v1/users/{customer_user.id}/role",
         json={"role": "admin"},
@@ -92,7 +87,6 @@ def test_reviewer_and_staff_cannot_manage_roles(client, reviewer_headers, staff_
     )
     assert res_rev.status_code == 403
 
-    # Staff
     res_staff = client.put(
         f"/api/v1/users/{customer_user.id}/role",
         json={"role": "admin"},
@@ -112,11 +106,9 @@ def test_customer_cannot_access_admin_endpoints(client, customer_headers, review
 
 def test_customer_and_staff_cannot_mutate_review_queues(client, customer_headers, staff_headers):
     """Ensure customer and staff cannot view review queues or submit review decisions."""
-    # Customer queue access
     res_cust_queue = client.get("/api/v1/reviews/queue", headers=customer_headers)
     assert res_cust_queue.status_code == 403
 
-    # Staff decision submission
     decision_payload = {
         "decision": "APPROVED",
         "reasoning": "Manual test override",
@@ -125,6 +117,5 @@ def test_customer_and_staff_cannot_mutate_review_queues(client, customer_headers
     res_staff_dec = client.post("/api/v1/reviews/1/decision", json=decision_payload, headers=staff_headers)
     assert res_staff_dec.status_code == 403
 
-    # Customer decision submission
     res_cust_dec = client.post("/api/v1/reviews/1/decision", json=decision_payload, headers=customer_headers)
     assert res_cust_dec.status_code == 403

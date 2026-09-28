@@ -102,9 +102,6 @@ def test_late_reporting_triggers_rejection_or_review(rule_engine):
     assert res["decision"] in (DecisionType.REJECT.value, DecisionType.MANUAL_REVIEW.value)
 
 
-# ---------------------------------------------------------------------------
-# Dynamic JSON Warranty Policies Deep Verification Tests
-# ---------------------------------------------------------------------------
 
 def test_electronics_policy_structure_and_limits():
     """Verify Electronics policy configuration, allowed faults, exclusions, and repair limits."""
@@ -112,14 +109,12 @@ def test_electronics_policy_structure_and_limits():
     assert policy["category_code"] == "ELECTRONICS"
     assert policy["grace_period_days"] == 14
     
-    # Repair limits
     limits = policy["repair_limits"]
     assert limits["max_repair_cost_percentage"] == 75.0
     assert limits["max_claims_per_warranty"] == 3
     assert limits["total_aggregate_limit_percentage"] == 100.0
     assert limits["replacement_threshold_percentage"] == 80.0
 
-    # Allowed fault types
     fault_codes = [f["code"] for f in policy["allowed_fault_types"]]
     assert "POWER_FAILURE" in fault_codes
     assert "DISPLAY_DEFECT" in fault_codes
@@ -127,7 +122,6 @@ def test_electronics_policy_structure_and_limits():
     assert "PORT_DEFECT" in fault_codes
     assert "FIRMWARE_CORRUPTION" in fault_codes
 
-    # Exclusions
     exclusion_codes = [e["code"] for e in policy["exclusions"]]
     assert "PHYSICAL_IMPACT" in exclusion_codes
     assert "LIQUID_DAMAGE" in exclusion_codes
@@ -142,17 +136,14 @@ def test_home_appliances_policy_structure_and_limits():
     assert policy["category_code"] == "HOME_APPLIANCES"
     assert policy["grace_period_days"] == 30
 
-    # Repair limits
     limits = policy["repair_limits"]
     assert limits["max_repair_cost_percentage"] == 70.0
     assert limits["max_claims_per_warranty"] == 4
     assert limits["total_aggregate_limit_percentage"] == 120.0
     assert limits["replacement_threshold_percentage"] == 75.0
 
-    # Mandatory documents
     assert "installation_certificate" in policy["mandatory_documents"]
 
-    # Allowed fault types
     fault_codes = [f["code"] for f in policy["allowed_fault_types"]]
     assert "COMPRESSOR_FAILURE" in fault_codes
     assert "MOTOR_FAILURE" in fault_codes
@@ -160,7 +151,6 @@ def test_home_appliances_policy_structure_and_limits():
     assert "CONTROL_BOARD_ERROR" in fault_codes
     assert "PUMP_LEAKAGE_INTERNAL" in fault_codes
 
-    # Exclusions
     exclusion_codes = [e["code"] for e in policy["exclusions"]]
     assert "IMPROPER_INSTALLATION" in exclusion_codes
     assert "COMMERCIAL_USE" in exclusion_codes
@@ -174,14 +164,12 @@ def test_mobile_phones_policy_structure_and_limits():
     assert policy["category_code"] == "MOBILE_PHONES"
     assert policy["grace_period_days"] == 7
 
-    # Repair limits
     limits = policy["repair_limits"]
     assert limits["max_repair_cost_percentage"] == 65.0
     assert limits["max_claims_per_warranty"] == 2
     assert limits["total_aggregate_limit_percentage"] == 100.0
     assert limits["replacement_threshold_percentage"] == 70.0
 
-    # Allowed fault types
     fault_codes = [f["code"] for f in policy["allowed_fault_types"]]
     assert "TOUCH_CONTROLLER_FAILURE" in fault_codes
     assert "BATTERY_DEGRADATION_PREMATURE" in fault_codes
@@ -189,7 +177,6 @@ def test_mobile_phones_policy_structure_and_limits():
     assert "NETWORK_BASEBAND_FAILURE" in fault_codes
     assert "CHARGING_IC_FAILURE" in fault_codes
 
-    # Exclusions
     exclusion_codes = [e["code"] for e in policy["exclusions"]]
     assert "SCREEN_CRACK_ACCIDENTAL" in exclusion_codes
     assert "WATER_INGRESS_SUBMERSION" in exclusion_codes
@@ -200,7 +187,6 @@ def test_mobile_phones_policy_structure_and_limits():
 
 def test_policy_grace_period_evaluation(rule_engine):
     """Verify grace period rules for various product categories."""
-    # Electronics grace period is 14 days
     res_elec_grace = rule_engine.evaluate({
         "product_category": "electronics",
         "warranty_active": "no",
@@ -210,7 +196,6 @@ def test_policy_grace_period_evaluation(rule_engine):
     assert res_elec_grace["decision"] == DecisionType.MANUAL_REVIEW.value
     assert any("GRACE_PERIOD" in w for w in res_elec_grace["warnings"])
 
-    # Mobile grace period is 7 days, so -10 days should be expired/rejected
     res_mob_expired = rule_engine.evaluate({
         "product_category": "mobile_phones",
         "warranty_active": "no",
@@ -220,7 +205,6 @@ def test_policy_grace_period_evaluation(rule_engine):
     assert res_mob_expired["decision"] == DecisionType.REJECT.value
     assert any("POLICY_EXPIRED_WARRANTY" in v for v in res_mob_expired["violations"])
 
-    # Home Appliances grace period is 30 days, so -20 days should get grace review
     res_app_grace = rule_engine.evaluate({
         "product_category": "home_appliances",
         "warranty_active": "no",
@@ -233,7 +217,6 @@ def test_policy_grace_period_evaluation(rule_engine):
 
 def test_specific_category_damage_exclusions(rule_engine):
     """Verify category-specific damage exclusions like Screen Crack on mobile, Improper Installation on appliances."""
-    # Mobile screen crack
     res_mobile_crack = rule_engine.evaluate({
         "product_category": "mobile_phones",
         "damage_type": "screen_crack_accidental",
@@ -242,7 +225,6 @@ def test_specific_category_damage_exclusions(rule_engine):
     assert res_mobile_crack["decision"] == DecisionType.REJECT.value
     assert any("POLICY_EXCLUDED_DAMAGE" in v for v in res_mobile_crack["violations"])
 
-    # Home appliance improper installation
     res_app_install = rule_engine.evaluate({
         "product_category": "home_appliances",
         "damage_type": "improper_installation",
@@ -251,7 +233,6 @@ def test_specific_category_damage_exclusions(rule_engine):
     assert res_app_install["decision"] == DecisionType.REJECT.value
     assert any("POLICY_EXCLUDED_DAMAGE" in v for v in res_app_install["violations"])
 
-    # Power surge manual review condition
     res_surge = rule_engine.evaluate({
         "product_category": "electronics",
         "damage_type": "power_surge_unprotected",

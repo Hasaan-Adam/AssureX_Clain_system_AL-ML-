@@ -13,7 +13,6 @@ from pathlib import Path
 import sys
 from typing import Any, Dict, List, Optional, Union
 
-# Ensure project root is in sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -103,17 +102,13 @@ class ClaimPredictor:
                 - `probabilities`: dict mapping each class to its probability
                 - `model_version`: string version identifier
         """
-        # Feature extraction
         features_df = extract_features(claim_data)
         
-        # Preprocessing transformation
         X_trans = self._preprocessor.transform(features_df)
         
-        # Inference
         if hasattr(self._model, "predict_proba"):
             probs = self._model.predict_proba(X_trans)[0]
         else:
-            # Fallback for models without predict_proba
             pred_idx = self._model.predict(X_trans)[0]
             probs = np.zeros(len(self._label_encoder.classes_))
             probs[pred_idx] = 1.0

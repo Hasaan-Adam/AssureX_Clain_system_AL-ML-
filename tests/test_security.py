@@ -49,7 +49,6 @@ from src.utils.file_utils import (
 from src.utils.hashing import hash_bytes, hash_string
 
 
-# --- Security & Auth Tests ---
 
 def test_password_hashing_and_bcrypt_12_rounds():
     """Verify bcrypt hashing with 12 rounds cost factor and verification logic."""
@@ -61,9 +60,7 @@ def test_password_hashing_and_bcrypt_12_rounds():
     assert verify_password(raw_pass, hashed) is True
     assert verify_password("WrongPassword!", hashed) is False
 
-    # Verify bcrypt scheme and 12 rounds cost factor
     assert "bcrypt" in pwd_context.schemes()
-    # bcrypt hash format: $2b$<rounds>$... (12 rounds indicator is $12$)
     parts = hashed.split("$")
     assert len(parts) >= 4
     assert parts[2] == "12", f"Expected 12 bcrypt rounds, got {parts[2]}"
@@ -121,11 +118,9 @@ def test_jwt_invalid_token_type():
         verify_token(token, expected_type="refresh")
 
 
-# --- Permissions & 4-Role RBAC Matrix Tests ---
 
 def test_four_role_rbac_matrix_permissions():
     """Rigorously verify permission matrix across customer, staff, reviewer, admin."""
-    # 1. Customer permissions
     assert has_permission("customer", "claims:create") is True
     assert has_permission("customer", "claims:read_own") is True
     assert has_permission("customer", "claims:upload_docs") is True
@@ -137,7 +132,6 @@ def test_four_role_rbac_matrix_permissions():
     assert has_permission("customer", "users:manage_roles") is False
     assert has_permission("customer", "settings:update") is False
 
-    # 2. Staff permissions
     assert has_permission("staff", "claims:create") is True
     assert has_permission("staff", "claims:read_all") is True
     assert has_permission("staff", "claims:create_on_behalf") is True
@@ -148,7 +142,6 @@ def test_four_role_rbac_matrix_permissions():
     assert has_permission("staff", "users:delete") is False
     assert has_permission("staff", "settings:update") is False
 
-    # 3. Reviewer permissions
     assert has_permission("reviewer", "claims:review") is True
     assert has_permission("reviewer", "claims:approve") is True
     assert has_permission("reviewer", "claims:reject") is True
@@ -160,7 +153,6 @@ def test_four_role_rbac_matrix_permissions():
     assert has_permission("reviewer", "users:manage_roles") is False
     assert has_permission("reviewer", "settings:update") is False
 
-    # 4. Admin permissions (Superuser has all permissions)
     assert has_permission("admin", "users:create") is True
     assert has_permission("admin", "users:read") is True
     assert has_permission("admin", "users:update") is True
@@ -206,7 +198,6 @@ def test_role_rank_hierarchy():
     assert is_role_at_least("customer", "admin") is False
 
 
-# --- Exceptions & Error Response Tests ---
 
 def test_error_formatting():
     resp = format_error_response(
@@ -222,7 +213,6 @@ def test_error_formatting():
     assert body["error"]["message"] == "Item not found"
 
 
-# --- Date & Hashing Utilities Tests ---
 
 def test_date_utilities():
     d = parse_date("2024-05-15")
@@ -260,7 +250,6 @@ def test_hashing_utilities():
     assert len(h1) == 64
 
 
-# --- Policy JSON Files Validation ---
 
 def test_policy_json_files_exist_and_valid():
     policy_files = ["policies/electronics.json", "policies/home_appliances.json", "policies/mobile_phones.json"]

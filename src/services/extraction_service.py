@@ -8,7 +8,6 @@ import re
 from typing import Any, Dict, List, Optional
 
 
-# Regex Patterns for entity extraction
 DATE_PATTERNS = [
     r"\b(\d{4}[-/.]\d{1,2}[-/.]\d{1,2})\b",           # 2024-05-13, 2024/05/13, 2024.05.13
     r"\b(\d{1,2}[-/.]\d{1,2}[-/.]\d{4})\b",           # 13-05-2024, 05/13/2024, 13.05.2024
@@ -75,21 +74,18 @@ def extract_invoice_number(text: str) -> Optional[str]:
     if not text:
         return None
 
-    # 1. First priority: Standard formatted prefix tokens (INV-XXXX, REC-XXXX, ORD-XXXX, TXN-XXXX, BILL-XXXX)
     formatted_m = re.search(r"\b((?:INV|REC|ORD|TXN|BILL|DOC|VCH|REF)-[A-Za-z0-9\-]{3,25})\b", text, re.IGNORECASE)
     if formatted_m:
         token = formatted_m.group(1).upper()
         if token.upper() not in EXCLUDED_INVOICE_WORDS:
             return token
 
-    # 2. Hash prefixed e.g. #981023
     hash_m = re.search(r"\b#([A-Za-z0-9\-]{4,20})\b", text)
     if hash_m:
         val = f"#{hash_m.group(1)}"
         if val.upper() not in EXCLUDED_INVOICE_WORDS:
             return val
 
-    # 3. Single-line labeled patterns (e.g. 'Invoice No: 10492', 'Invoice #: SM-991')
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     for line in lines:
         m = re.search(
@@ -104,7 +100,6 @@ def extract_invoice_number(text: str) -> Optional[str]:
             if len(val_no_space) >= 3 and val_no_space.upper() not in EXCLUDED_INVOICE_WORDS:
                 return val
 
-    # 4. Multi-line stacked search (Label on Line N, Value on Line N+1 or Line N+2)
     label_pattern = re.compile(
         r"^(?:Invoice\s*(?:Number|No\.?|#|ID)?|Tax\s+Invoice\s*(?:No\.?|#|ID|Number)?|INV\s*(?:#|No\.?|ID)?|Receipt\s*(?:Number|No\.?|#|ID)?|Bill\s*(?:Number|No\.?|#|ID)?|Order\s*(?:ID|#|Number)?|Transaction\s*(?:ID|#|Number)?|Ref\s*(?:No\.?|#|ID)?|Document\s*(?:No\.?|#|ID)?|Doc\s*(?:No\.?|#|ID)?|Voucher\s*(?:No\.?|#|ID)?)$",
         re.IGNORECASE,
@@ -125,7 +120,6 @@ def extract_invoice_number(text: str) -> Optional[str]:
                     ):
                         return candidate
 
-    # 5. Generic invoice regex list
     for pattern in INVOICE_PATTERNS:
         matches = re.finditer(pattern, text, re.IGNORECASE)
         for match in matches:
@@ -135,7 +129,6 @@ def extract_invoice_number(text: str) -> Optional[str]:
             if len(val_no_space) >= 3 and val_no_space.upper() not in EXCLUDED_INVOICE_WORDS:
                 return val
 
-    # 6. Fallback: Search for standalone alphanumeric codes in top 12 lines if invoice keyword is present
     has_invoice_word = re.search(r"\b(?:invoice|receipt|tax invoice|bill to|order)\b", text, re.IGNORECASE)
     if has_invoice_word:
         for line in lines[:12]:
@@ -162,9 +155,7 @@ def extract_date(text: str) -> Optional[str]:
         matches = re.finditer(pattern, text, re.IGNORECASE)
         for match in matches:
             raw_date = match.group(1).strip()
-            # Clean ordinal suffixes like 13th -> 13
             clean_date = re.sub(r"(\d+)(?:st|nd|rd|th)", r"\1", raw_date).replace(",", "")
-            # Try parsing
             for fmt in (
                 "%Y-%m-%d", "%Y/%m/%d", "%Y.%m.%d",
                 "%m/%d/%Y", "%m-%d-%Y", "%m.%d.%Y",
@@ -187,7 +178,6 @@ def extract_price(text: str) -> Optional[float]:
     if not text:
         return None
 
-    # Line by line check prioritized by label
     for line in text.splitlines():
         if re.search(r"(?:Total|Grand\s+Total|Net\s+Amount|Amount\s+Due|Paid|Price|Amount)", line, re.IGNORECASE):
             for pat in PRICE_PATTERNS:
@@ -219,7 +209,6 @@ def extract_serial_number(text: str) -> Optional[str]:
     if not text:
         return None
 
-    # 1. Line-by-line check with prefix
     for line in text.splitlines():
         m = re.search(r"(?:Serial\s+(?:Number|No\.?|#)|S/N|SN|Serial)[\s:#\-]+([A-Za-z0-9\-_]{4,35})", line, re.IGNORECASE)
         if m:
@@ -227,12 +216,10 @@ def extract_serial_number(text: str) -> Optional[str]:
             if len(ser) >= 4 and ser.upper() not in EXCLUDED_INVOICE_WORDS:
                 return ser
 
-    # 2. General patterns
     for pattern in SERIAL_PATTERNS:
         match = re.search(pattern, text, re.IGNORECASE)
         if match:
             ser = match.group(1).strip()
-            # Avoid matching invoice patterns
             if not ser.startswith("INV-") and not ser.startswith("ORD-") and not ser.startswith("REC-"):
                 if len(ser) >= 4 and ser.upper() not in EXCLUDED_INVOICE_WORDS:
                     return ser
@@ -269,7 +256,6 @@ def extract_retailer(text: str) -> Optional[str]:
         if re.search(r"\b" + re.escape(retailer) + r"\b", text, re.IGNORECASE):
             return retailer
 
-    # Fallback to first non-empty header line
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     if lines:
         first_line = lines[0]

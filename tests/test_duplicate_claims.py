@@ -25,7 +25,6 @@ def test_duplicate_claim_detection(test_db, customer_user, sample_warranty):
     test_db.add(claim1)
     test_db.commit()
 
-    # Check for duplicate
     dup_res = check_duplicate_claim(test_db, warranty_id=sample_warranty.id, fault_type="Screen Glitch")
     assert dup_res["is_duplicate"] is True
     assert dup_res["duplicate_count"] >= 1

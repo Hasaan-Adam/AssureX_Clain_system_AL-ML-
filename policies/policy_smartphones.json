@@ -1,0 +1,16 @@
+{
+  "product_category": "Smartphones",
+  "coverage_duration_days": 365,
+  "warranty_start_conditions": "Date of Purchase",
+  "covered_faults": ["Battery Failure", "Screen Glitch", "Motherboard Short"],
+  "exclusions": ["Water Damage", "Physical Screen Crack", "Unauthorized Repair"],
+  "claim_reporting_period_days": 30,
+  "repair_conditions": "Must use OEM parts",
+  "authorized_service_centre_requirements": true,
+  "replacement_conditions": "Beyond economical repair (>80% cost)",
+  "grace_periods_days": 7,
+  "mandatory_documents": ["Purchase Receipt", "Clear Product Image", "Serial Number Photo"],
+  "hard_fail_rules": ["Warranty Expired", "Duplicate Serial Number"],
+  "warning_rules": ["Missing Original Box"],
+  "manual_review_rules": ["Claim Amount > $800"]
+}

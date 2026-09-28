@@ -33,7 +33,6 @@ def generate_claim_pdf_report(db: Session, claim_id: int) -> bytes:
 
     styles = getSampleStyleSheet()
     
-    # Custom styles
     primary_color = colors.HexColor("#0f172a")
     brand_color = colors.HexColor("#0284c7")
     accent_green = colors.HexColor("#16a34a")
@@ -88,7 +87,6 @@ def generate_claim_pdf_report(db: Session, claim_id: int) -> bytes:
 
     story = []
 
-    # 1. Header Banner
     header_data = [
         [
             Paragraph("<b>ASSUREX CLAIM ENGINE</b><br/><font size=8 color='#64748b'>Automated Warranty & AI Adjudication Platform</font>", title_style),
@@ -104,7 +102,6 @@ def generate_claim_pdf_report(db: Session, claim_id: int) -> bytes:
     story.append(Spacer(1, 10))
     story.append(HRFlowable(width="100%", thickness=1.5, color=brand_color, spaceBefore=4, spaceAfter=14))
 
-    # 2. Executive Summary Box
     status_str = str(claim.status).upper() if claim.status else "SUBMITTED"
     decision_str = str(claim.final_decision or claim.ai_decision or "UNDER EVALUATION").upper()
 
@@ -134,7 +131,6 @@ def generate_claim_pdf_report(db: Session, claim_id: int) -> bytes:
     story.append(summary_table)
     story.append(Spacer(1, 14))
 
-    # 3. Product & Warranty Details
     story.append(Paragraph("1. EQUIPMENT & WARRANTY INFORMATION", section_header))
     story.append(Spacer(1, 6))
 
@@ -160,7 +156,6 @@ def generate_claim_pdf_report(db: Session, claim_id: int) -> bytes:
     story.append(equip_table)
     story.append(Spacer(1, 14))
 
-    # 4. Fault Description
     story.append(Paragraph("2. FAULT & DAMAGE ASSESSMENT", section_header))
     story.append(Spacer(1, 6))
     
@@ -179,14 +174,11 @@ def generate_claim_pdf_report(db: Session, claim_id: int) -> bytes:
     story.append(fault_table)
     story.append(Spacer(1, 14))
 
-    # 5. Dual-Model AI Adjudication & Fraud Risk (100% Dynamic)
     story.append(Paragraph("3. AI ADJUDICATION & VERIFICATION AUDIT", section_header))
     story.append(Spacer(1, 6))
 
-    # Dynamic calculation from claim & predictions
     pred = claim.predictions[0] if claim.predictions else None
     
-    # Confidence calculation
     conf_val = 92.0
     if claim.ai_confidence:
         conf_val = claim.ai_confidence * 100.0
@@ -201,12 +193,10 @@ def generate_claim_pdf_report(db: Session, claim_id: int) -> bytes:
 
     conf_text = f"{conf_val:.1f}% ({'High Reliability' if conf_val >= 80 else 'Moderate Reliability'})"
 
-    # Fraud score calculation
     fraud_val = claim.fraud_score if hasattr(claim, 'fraud_score') and claim.fraud_score is not None else 0.08
     fraud_level = "Low Risk" if fraud_val < 0.3 else "Medium Risk" if fraud_val < 0.7 else "High Risk"
     fraud_text = f"{fraud_level} ({fraud_val:.2f} / 1.00)"
 
-    # OCR Match verification from documents
     ocr_text = "No Invoice Document Provided"
     has_invoice = False
     for d in claim.documents:
@@ -214,7 +204,6 @@ def generate_claim_pdf_report(db: Session, claim_id: int) -> bytes:
             has_invoice = True
             inv_serial = "SN-98234-AX"
             if d.ocr_extracted_text:
-                # check serial in the OCR text extracted from the receipt
                 import re
                 m = re.search(r"SN-?[A-Za-z0-9\-]+", d.ocr_extracted_text)
                 if m:
@@ -228,7 +217,6 @@ def generate_claim_pdf_report(db: Session, claim_id: int) -> bytes:
             break
 
     if not has_invoice:
-        # Check first document or fallback
         if claim.documents:
             ocr_text = f"Document Attached ({len(claim.documents)} file(s)) - Pending Review"
         else:
@@ -251,7 +239,6 @@ def generate_claim_pdf_report(db: Session, claim_id: int) -> bytes:
     story.append(ai_table)
     story.append(Spacer(1, 24))
 
-    # 6. Official Sign-off & Stamp
     footer_text = (
         "<b>ASSUREX AUTOMATED ADJUDICATION SYSTEM</b><br/>"
         "<font size=8 color='#64748b'>This is a system-generated official adjudication report. "

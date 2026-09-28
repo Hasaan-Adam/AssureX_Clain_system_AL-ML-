@@ -15,7 +15,6 @@ from pathlib import Path
 import sys
 from typing import Any, Dict, Optional, Union
 
-# Ensure project root is in sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -77,17 +76,14 @@ def evaluate_model(
     preprocessor = load_preprocessor(preprocessor_path)
     label_encoder = load_label_encoder(label_encoder_path)
 
-    # 1. Feature Extraction & Transform
     X_test, y_test = extract_features_and_target(test_df, TARGET_COLUMN)
     X_test_trans = preprocessor.transform(X_test)
     y_test_enc = label_encoder.transform(y_test)
     class_names = list(label_encoder.classes_)
 
-    # 2. Prediction & Probabilities
     y_pred_enc = model.predict(X_test_trans)
     y_pred = label_encoder.inverse_transform(y_pred_enc)
 
-    # 3. Overall Metrics Calculation
     acc = accuracy_score(y_test_enc, y_pred_enc)
     prec_macro = precision_score(y_test_enc, y_pred_enc, average="macro", zero_division=0)
     prec_weighted = precision_score(y_test_enc, y_pred_enc, average="weighted", zero_division=0)
@@ -99,7 +95,6 @@ def evaluate_model(
     cm = confusion_matrix(y_test_enc, y_pred_enc)
     clf_dict = classification_report(y_test_enc, y_pred_enc, target_names=class_names, output_dict=True)
 
-    # 4. Class-wise Breakdown
     class_breakdown = {}
     for idx, cname in enumerate(class_names):
         class_breakdown[cname] = {
@@ -129,7 +124,6 @@ def evaluate_model(
         "confusion_matrix": cm.tolist(),
     }
 
-    # Format human-readable output
     report_text = f"""
 ================================================================================
                     ASSUREX CLAIM ENGINE — MODEL EVALUATION
@@ -161,14 +155,12 @@ Labels order: {class_names}
 """
     logger.info(report_text)
 
-    # 5. Persist Evaluation Report
     report_path_obj = Path(report_output_path)
     report_path_obj.parent.mkdir(parents=True, exist_ok=True)
     with open(report_path_obj, "w", encoding="utf-8") as f:
         json.dump(evaluation_report, f, indent=2)
     logger.info(f"Saved evaluation report to: {report_path_obj.resolve()}")
 
-    # 6. Update Registry with Test Metrics
     latest_entry = get_latest_version()
     if latest_entry:
         latest_entry["metrics"]["test_accuracy"] = float(acc)

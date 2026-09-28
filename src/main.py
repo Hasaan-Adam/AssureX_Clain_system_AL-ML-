@@ -19,7 +19,6 @@ from src.config import settings
 from src.core.exceptions import AssureXBaseException, format_error_response
 from src.core.logging_config import setup_logging
 
-# Initialize Logging
 setup_logging(
     log_level=settings.logging.level,
     log_format=settings.logging.format,
@@ -33,20 +32,17 @@ async def lifespan(app: FastAPI):
     Application startup and shutdown event handler.
     Ensures database schema exists and directories are initialized.
     """
-    # 1. Ensure upload and static directories exist
     upload_path = Path(settings.uploads.upload_dir)
     upload_path.mkdir(parents=True, exist_ok=True)
 
     static_path = Path("static")
     static_path.mkdir(parents=True, exist_ok=True)
 
-    # 2. Create database tables if not created
     Base.metadata.create_all(bind=engine)
 
     yield
 
 
-# Initialize FastAPI instance
 app = FastAPI(
     title=settings.app.name,
     version=settings.app.version,
@@ -58,9 +54,6 @@ app = FastAPI(
     redirect_slashes=False,  # Prevents 307 redirects that bypass Vite proxy and cause CORS errors
 )
 
-# ---------------------------------------------------------
-# CORS Middleware
-# ---------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors.allow_origins,
@@ -70,9 +63,6 @@ app.add_middleware(
 )
 
 
-# ---------------------------------------------------------
-# Global Exception Handlers
-# ---------------------------------------------------------
 @app.exception_handler(AssureXBaseException)
 async def assurex_exception_handler(request: Request, exc: AssureXBaseException):
     """Handle custom application exceptions cleanly."""
@@ -130,7 +120,6 @@ async def generic_exception_handler(request: Request, exc: Exception):
     """Handle unhandled server exceptions and print traceback securely."""
     import traceback
     traceback.print_exc()
-    # In development with debug enabled, provide safe error type, otherwise generic message
     is_debug = getattr(settings.app, "debug", False)
     msg = f"{type(exc).__name__}: {str(exc)}" if is_debug else "An unexpected internal server error occurred. Please try again later."
     details = {"error_type": type(exc).__name__} if is_debug else {}
@@ -142,9 +131,6 @@ async def generic_exception_handler(request: Request, exc: Exception):
     )
 
 
-# ---------------------------------------------------------
-# Static Files Mounting
-# ---------------------------------------------------------
 uploads_dir = Path(settings.uploads.upload_dir)
 uploads_dir.mkdir(parents=True, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
@@ -154,13 +140,9 @@ static_dir.mkdir(parents=True, exist_ok=True)
 app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 
-# ---------------------------------------------------------
-# Route Mounting
-# ---------------------------------------------------------
 app.include_router(api_router, prefix=settings.app.api_prefix)
 
 
-# Root Health check endpoints
 @app.get("/", tags=["Health"])
 @app.get("/health", tags=["Health"])
 def health_check():

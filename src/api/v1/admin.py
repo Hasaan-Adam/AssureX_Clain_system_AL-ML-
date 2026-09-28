@@ -165,7 +165,6 @@ def update_policy(filename: str, payload: dict):
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=4)
         
-    # Clear cache in rule engine if loaded
     from src.services.rule_engine import _POLICY_CACHE
     if filename in _POLICY_CACHE:
         del _POLICY_CACHE[filename]

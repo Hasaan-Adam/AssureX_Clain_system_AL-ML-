@@ -20,7 +20,6 @@ from src.services.rule_engine import evaluate_rules
 from src.services.decision_service import make_final_decision
 from src.services.explanation_service import generate_explanation
 
-# Paths
 ROOT = Path(__file__).resolve().parents[2]  # project root
 TEST_CSV = ROOT / "data" / "test" / "claims_test.csv"
 REPORT_DIR = ROOT / "reports"
@@ -61,7 +60,6 @@ def generate_comparison_report(
     """Generate model comparison report for n unseen test claims."""
     random.seed(seed)
     
-    # Load test claims
     test_rows = list(csv.DictReader(open(test_csv, encoding="utf-8")))
     if len(test_rows) < n_samples:
         n_samples = len(test_rows)
@@ -73,17 +71,11 @@ def generate_comparison_report(
     for claim in sample_claims:
         claim_id = claim["claim_id"]
         
-        # 1. Python ML Prediction
         py_result = predict_claim(claim)
         py_class = py_result["predicted_class"]
         py_probs = py_result["probabilities"]
         
-        # 2. TM Prediction (simulate frontend TM result)
-        # In production, frontend would run TFJS inference and submit result
-        # Here we simulate by using claim data to approximate TM prediction
-        # For this synthetic dataset, TM should match Python closely
         tm_probs = py_probs.copy()
-        # Add small noise to simulate model variation
         import numpy as np
         noise = np.random.normal(0, 0.02, 3)
         tm_probs_list = [max(0, tm_probs.get(c, 0) + noise[i]) for i, c in enumerate(["Invalid Claim", "Manual Review", "Valid Claim"])]
@@ -101,13 +93,10 @@ def generate_comparison_report(
         }
         tm_result = accept_frontend_tm_result(tm_result)
         
-        # 3. Model Comparison
         comparison = compare_models(py_result, tm_result)
         
-        # 4. Rule Engine
         rule_result = evaluate_rules(claim)
         
-        # 4. Final Decision
         final_decision = make_final_decision(
             python_prediction=py_result,
             tm_prediction=tm_result,
@@ -115,7 +104,6 @@ def generate_comparison_report(
             rule_result=rule_result,
         )
         
-        # 5. Explanation
         explanation = generate_explanation(
             python_prediction=py_result,
             tm_prediction=tm_result,
@@ -124,7 +112,6 @@ def generate_comparison_report(
             final_decision=final_decision,
         )
         
-        # Build report row
         row = {
             "claim_id": claim_id,
             "actual_class": claim["label"],
@@ -149,14 +136,12 @@ def generate_comparison_report(
         }
         report_rows.append(row)
     
-    # Write CSV
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     with open(output_csv, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=REPORT_COLUMNS)
         writer.writeheader()
         writer.writerows(report_rows)
     
-    # Write Markdown summary
     _write_markdown_report(report_rows, output_md)
     
     print(f"Model comparison report generated: {len(report_rows)} claims")

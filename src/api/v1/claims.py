@@ -24,7 +24,6 @@ from src.utils.constants import RoleEnum, normalize_role
 
 router = APIRouter(prefix="/claims", tags=["Claims"])
 
-#: Roles allowed to file a claim on behalf of a customer.
 ON_BEHALF_ROLES = (RoleEnum.SERVICE_STAFF, RoleEnum.REVIEWER, RoleEnum.ADMIN)
 
 

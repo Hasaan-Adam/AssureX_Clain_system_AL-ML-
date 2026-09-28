@@ -4,7 +4,6 @@ from typing import Any, Dict, Optional
 import yaml
 from pathlib import Path
 
-# Load thresholds from YAML
 THRESHOLDS_PATH = Path(__file__).resolve().parents[2] / "config" / "thresholds.yaml"
 with open(THRESHOLDS_PATH, "r", encoding="utf-8") as f:
     _thresholds = yaml.safe_load(f) or {}
@@ -35,7 +34,6 @@ def compare_models(
     **kwargs: Any,
 ) -> Dict[str, Any]:
     """Compare Python ML, Teachable Machine, and Rule predictions."""
-    # Check if tm_prediction is actually a rule prediction (e.g. from tests)
     if tm_prediction and "decision" in tm_prediction and "probabilities" not in tm_prediction and "predicted_class" not in tm_prediction:
         ml_dec = python_prediction.get("decision") or python_prediction.get("predicted_class", "APPROVE")
         rule_dec = tm_prediction.get("decision", "APPROVE")
@@ -69,7 +67,6 @@ def compare_models(
     max_delta = round(max(deltas.values()) if deltas else abs(py_conf - tm_conf), 4)
     classes_match = (py_class == tm_class)
     
-    # Consistency status
     if py_conf < LOW_CONFIDENCE_THRESHOLD and tm_conf < LOW_CONFIDENCE_THRESHOLD:
         consistency_status = "Uncertain"
         requires_manual_review = True

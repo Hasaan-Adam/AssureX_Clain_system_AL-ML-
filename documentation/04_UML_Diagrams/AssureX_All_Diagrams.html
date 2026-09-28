@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssureX Claim Engine - Diagrams</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; background-color: #f8f9fa; }
+        .diagram-container { background: white; padding: 30px; margin-bottom: 40px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #2d3748; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px; }
+        .mermaid { display: flex; justify-content: center; }
+    </style>
+</head>
+<body>
+
+    <h1 style="text-align: center; color: #1a202c; margin-bottom: 50px;">AssureX Claim Engine - System Diagrams</h1>
+
+    <div class="diagram-container">
+        <h2>1. System Architecture Design</h2>
+        <div class="mermaid">
+            flowchart TD
+                subgraph Presentation Layer
+                    Client[React.js SPA]
+                    Tailwind[TailwindCSS UI]
+                end
+                subgraph Business Logic Layer
+                    API[FastAPI Backend]
+                    Auth[JWT Auth Service]
+                    RE[Deterministic Rule Engine]
+                    OCR[Tesseract OCR Service]
+                end
+                subgraph Artificial Intelligence Layer
+                    Synth[Dual-Model Synthesis]
+                    XGB[Python XGBoost Classifier]
+                    GTM[GTM MobileNetV2 Vision]
+                end
+                subgraph Data Layer
+                    DB[(SQLAlchemy Database)]
+                    Storage[(Document Storage)]
+                end
+                Client <-->|REST API| API
+                API --> Auth
+                API --> RE
+                API --> OCR
+                API --> Synth
+                Synth --> XGB
+                Synth --> GTM
+                API <--> DB
+                API --> Storage
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>2. System Workflow (Activity Diagram)</h2>
+        <div class="mermaid">
+            flowchart TD
+                Start([Customer Submits Claim]) --> Upload[Upload Receipt & Damage Image]
+                Upload --> OCR[System Extracts Text via OCR]
+                OCR --> RuleCheck{Rule Engine: Warranty Valid?}
+                RuleCheck -- No --> Reject1([Auto-Reject: Policy Violation])
+                RuleCheck -- Yes --> ML[Trigger Dual-AI Models]
+                ML --> XGB(Python Model: Structured Data)
+                ML --> GTM(Vision Model: Physical Damage)
+                XGB --> Synth{Synthesis Engine: Compare Confidence}
+                GTM --> Synth
+                Synth -- High Confidence Agree (Approve) --> Approve([Auto-Approve])
+                Synth -- High Confidence Agree (Reject) --> Reject2([Auto-Reject])
+                Synth -- Contradiction / Low Confidence --> Review[Route to Reviewer Queue]
+                Review --> Human{Reviewer Decision}
+                Human -- Override Approve --> Approve
+                Human -- Override Reject --> Reject2
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>3. Use Case Diagram</h2>
+        <div class="mermaid">
+            flowchart LR
+                subgraph AssureX Claim Engine
+                    UC1(Register & Login)
+                    UC2(Submit Warranty Claim)
+                    UC3(Track Claim Status)
+                    UC4(View Review Queue)
+                    UC5(Override AI Decision)
+                    UC6(View Analytics Dashboard)
+                    UC7(Manage Warranty Policies)
+                end
+                Customer((Customer)) --> UC1
+                Customer --> UC2
+                Customer --> UC3
+                Reviewer((Claim Reviewer)) --> UC1
+                Reviewer --> UC4
+                Reviewer --> UC5
+                Admin((System Admin)) --> UC1
+                Admin --> UC6
+                Admin --> UC7
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>4. Sequence Diagram</h2>
+        <div class="mermaid">
+            sequenceDiagram
+                actor Customer
+                participant Frontend as React.js Client
+                participant API as FastAPI
+                participant RE as Rule Engine
+                participant AI as ML Models
+                participant DB as SQLite/Postgres
+
+                Customer->>Frontend: Fill Claim Form & Upload
+                Frontend->>API: POST /api/v1/claims
+                API->>RE: Validate Expiry & Duplicates
+                
+                alt Rule Failed
+                    RE-->>API: Failed (Expired/Duplicate)
+                    API-->>Frontend: 403 Auto-Rejected
+                else Rule Passed
+                    RE-->>API: Passed
+                    API->>AI: Predict(StructuredData, Image)
+                    AI-->>API: Result (Confidence Scores)
+                    API->>DB: Save Claim, Prediction, Audit Log
+                    DB-->>API: Success
+                    API-->>Frontend: 201 Claim Created
+                    Frontend-->>Customer: Show Tracking Dashboard
+                end
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>5. Decision Flow Diagram</h2>
+        <div class="mermaid">
+            flowchart TD
+                C1{Is Warranty Expired?}
+                C1 -- Yes --> R1([Reject: Expired])
+                C1 -- No --> C2{Duplicate Serial Number?}
+                C2 -- Yes --> R2([Reject: Duplicate Claim])
+                C2 -- No --> M1{Python XGBoost Prediction?}
+                M1 -- Valid --> M2{GTM Vision Prediction?}
+                M1 -- Fraud --> M3{GTM Vision Prediction?}
+                M2 -- Damage Detected --> A1([Auto-Approve])
+                M2 -- No Damage Detected --> Rev([Send to Manual Review])
+                M3 -- Damage Detected --> Rev
+                M3 -- No Damage Detected --> A2([Auto-Reject])
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>6. Python Classification Model Design</h2>
+        <div class="mermaid">
+            flowchart LR
+                Raw[(Raw Database Records)] --> Pre1(Handle Missing Values)
+                Pre1 --> Pre2(Label Encoding)
+                Pre2 --> Pre3(Standard Scaling)
+                Pre3 --> XGB[XGBoost Classifier]
+                XGB --> Objective(binary:logistic Objective)
+                Objective --> Out([Probability Output 0.0 - 1.0])
+                style XGB fill:#f9f,stroke:#333,stroke-width:2px
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>7. Google Teachable Machine Model Design</h2>
+        <div class="mermaid">
+            flowchart LR
+                Img[Customer Uploaded Image] --> Resize(Resize 224x224)
+                Resize --> Norm(Normalize Pixels -1 to 1)
+                Norm --> Base[MobileNetV2 Base Model]
+                Base --> Flatten(Flatten Layer)
+                Flatten --> Dense(Dense Classification Layer)
+                Dense --> Softmax(Softmax Activation)
+                Softmax --> Out1([Valid Damage %])
+                Softmax --> Out2([Invalid/No Damage %])
+                style Base fill:#bbf,stroke:#333,stroke-width:2px
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>8. Data Flow Diagram (DFD Level 1)</h2>
+        <div class="mermaid">
+            flowchart TD
+                User((Customer)) -- Claim Details & Images --> API(Claim Processing API)
+                API -- Image File --> FileStore[(Local / S3 Uploads)]
+                API -- Receipt Image --> OCR(OCR Extraction Service)
+                OCR -- Extracted Text --> API
+                API -- Structured Data --> DB[(Main Database)]
+                DB -- Historical Data --> Analytics(Analytics Engine)
+                Analytics -- Aggregated Metrics --> Admin((Admin))
+                API -- Unverified Claims --> Queue[(Review Queue)]
+                Queue -- Pending Claims --> Reviewer((Reviewer))
+                Reviewer -- Override Action --> DB
+        </div>
+    </div>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>

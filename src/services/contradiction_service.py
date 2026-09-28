@@ -21,7 +21,6 @@ def detect_contradictions(claim_data: Dict[str, Any], extracted_data: Optional[D
     
     extracted = extracted_data or {}
     
-    # 1. Claim date before purchase date
     c_sub = claim_data.get("claim_submission_date") or claim_data.get("claim_date")
     p_date = claim_data.get("purchase_date")
     f_date = claim_data.get("fault_occurrence_date") or claim_data.get("fault_date")
@@ -38,7 +37,6 @@ def detect_contradictions(claim_data: Dict[str, Any], extracted_data: Optional[D
         except Exception:
             pass
 
-    # 2. Fault date before purchase date
     if f_date and p_date:
         try:
             fault = pd.to_datetime(f_date).date()
@@ -51,7 +49,6 @@ def detect_contradictions(claim_data: Dict[str, Any], extracted_data: Optional[D
         except Exception:
             pass
             
-    # 3. Fault date after claim submission
     if f_date and c_sub:
         try:
             fault = pd.to_datetime(f_date).date()
@@ -64,7 +61,6 @@ def detect_contradictions(claim_data: Dict[str, Any], extracted_data: Optional[D
         except Exception:
             pass
             
-    # 4. Past repair date before purchase date
     r_date = claim_data.get("last_repair_date") or claim_data.get("repair_date")
     if r_date and p_date:
         try:
@@ -78,9 +74,7 @@ def detect_contradictions(claim_data: Dict[str, Any], extracted_data: Optional[D
         except Exception:
             pass
 
-    # 5. Extracted Document vs Claim Differences (Dates, Prices, Serial, Model)
     if extracted:
-        # Date difference (> 7 days)
         if p_date and extracted.get("purchase_date"):
             try:
                 p1 = pd.to_datetime(p_date).date()
@@ -92,7 +86,6 @@ def detect_contradictions(claim_data: Dict[str, Any], extracted_data: Optional[D
             except Exception:
                 pass
                 
-        # Price difference
         price1 = claim_data.get("purchase_price")
         price2 = extracted.get("purchase_price")
         if price1 is not None and price2 is not None:
@@ -103,7 +96,6 @@ def detect_contradictions(claim_data: Dict[str, Any], extracted_data: Optional[D
             except Exception:
                 pass
                 
-        # Serial mismatch
         sn1 = claim_data.get("serial_number")
         sn2 = extracted.get("serial_number")
         if sn1 and sn2 and str(sn1).strip().upper() != str(sn2).strip().upper():
@@ -111,7 +103,6 @@ def detect_contradictions(claim_data: Dict[str, Any], extracted_data: Optional[D
             has_hard = True
             penalty += 0.30
 
-        # Model mismatch
         m1 = claim_data.get("product_model") or claim_data.get("product_name") or claim_data.get("model_number")
         m2 = extracted.get("product_model") or extracted.get("product_name") or extracted.get("model_number")
         if m1 and m2 and str(m1).strip().lower() != str(m2).strip().lower():

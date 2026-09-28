@@ -1,0 +1,16 @@
+{
+  "product_category": "Home Appliances",
+  "coverage_duration_days": 1825,
+  "warranty_start_conditions": "Date of Delivery",
+  "covered_faults": ["Compressor Failure", "Motor Burnout"],
+  "exclusions": ["Voltage Surge Damage", "Improper Installation", "Commercial Use"],
+  "claim_reporting_period_days": 45,
+  "repair_conditions": "In-home repair required",
+  "authorized_service_centre_requirements": true,
+  "replacement_conditions": "Parts unavailable for 30+ days",
+  "grace_periods_days": 30,
+  "mandatory_documents": ["Installation Receipt", "Purchase Invoice"],
+  "hard_fail_rules": ["Commercial Use Detected", "Warranty Expired"],
+  "warning_rules": ["Self-installed"],
+  "manual_review_rules": ["Claim Amount > $500", "Claim within first 30 days"]
+}

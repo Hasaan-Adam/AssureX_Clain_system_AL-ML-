@@ -17,7 +17,6 @@ def analyze_claim_readiness(claim_data: Dict[str, Any]) -> Dict[str, Any]:
     warnings = []
     suggestions = []
     
-    # Check documents
     doc_check = check_missing_documents(claim_data)
     if doc_check["missing_count"] > 0:
         for doc in doc_check["missing"]:
@@ -26,24 +25,20 @@ def analyze_claim_readiness(claim_data: Dict[str, Any]) -> Dict[str, Any]:
             else:
                 warnings.append(f"Missing supporting document: {doc.replace('_', ' ').title()}")
     
-    # Check contradictions
     contra_check = detect_contradictions(claim_data)
     if contra_check["has_contradiction"]:
         issues.append(f"Data contradiction detected: {contra_check['contradiction_type']}")
     
-    # Check duplicates
     dup_check = check_duplicate_claim(claim_data)
     if dup_check["is_duplicate"]:
         issues.append("Potential duplicate claim detected")
     
-    # Check serial
     serial_check = verify_serial_number(claim_data)
     if serial_check["status"] == "mismatch":
         issues.append("Serial number mismatch detected")
     elif serial_check["status"] == "missing_evidence":
         warnings.append("Serial number evidence missing")
     
-    # Check warranty
     remaining_days = claim_data.get("remaining_warranty_days")
     if remaining_days is not None:
         if remaining_days < 0:
@@ -51,7 +46,6 @@ def analyze_claim_readiness(claim_data: Dict[str, Any]) -> Dict[str, Any]:
         elif remaining_days <= 15:
             warnings.append(f"Warranty expires in {remaining_days} days (within grace period)")
 
-    # Reporting deadline
     reporting_days = claim_data.get("claim_reporting_days")
     if reporting_days is not None:
         if reporting_days > 30:
@@ -59,14 +53,12 @@ def analyze_claim_readiness(claim_data: Dict[str, Any]) -> Dict[str, Any]:
         elif reporting_days >= 25:
             warnings.append(f"Close to reporting deadline ({reporting_days}/30 days)")
 
-    # Proof of purchase
     proof = claim_data.get("proof_of_purchase")
     if proof == "no":
         issues.append("No proof of purchase provided")
     elif proof == "uncertain":
         warnings.append("Proof of purchase status uncertain")
 
-    # Core claim fields that must be filled in before submission
     missing_items: List[str] = []
     if not claim_data.get("warranty_id"):
         missing_items.append("warranty_id")

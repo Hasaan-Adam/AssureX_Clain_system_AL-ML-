@@ -271,7 +271,6 @@ class TestNoLabelLeakage:
             assert len(labs) == 1, f"Scenario '{s}' leaks across labels: {labs}"
 
     def test_ocr_quality_not_perfect_predictor(self, raw_data):
-        # Valid shouldn't be 100% high OCR
         valid_ocr = [r["ocr_quality"] for r in raw_data if r["label"] == "Valid Claim"]
         high_pct = valid_ocr.count("high") / len(valid_ocr)
         assert high_pct < 1.0, "Valid Claim has 100% high OCR (leakage risk)"

@@ -51,7 +51,6 @@ def perform_ocr_on_image(image_bytes: bytes) -> Dict[str, Any]:
     confidence = 0.0
     engine_used = "none"
 
-    # 1. Try RapidOCR (ONNX-powered deep learning OCR)
     ocr_engine = get_rapid_ocr()
     if ocr_engine:
         try:
@@ -67,7 +66,6 @@ def perform_ocr_on_image(image_bytes: bytes) -> Dict[str, Any]:
         except Exception as e:
             logger.warning(f"RapidOCR error: {e}")
 
-    # 2. Try pytesseract as fallback if RapidOCR didn't find text
     if not extracted_text:
         try:
             import pytesseract

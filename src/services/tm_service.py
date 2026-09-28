@@ -50,19 +50,15 @@ class TeachableMachineService:
         contradiction = float(str(claim_data.get("has_contradiction", "no")).lower() in ("yes", "true", "1"))
         serial_mismatch = float(claim_data.get("serial_status") == "mismatch")
 
-        # Create a deterministic 1280-dim feature vector from the claim state
         base_features = np.array([covered, active, excluded, docs_complete, contradiction, serial_mismatch], dtype=np.float32)
-        # Project base features up to 1280 dimensions (simulating a pooled embedding)
         np.random.seed(int(sum(base_features) * 100)) # Deterministic pseudo-random projection
         projection = np.random.randn(6, 1280).astype(np.float32)
         feature_vec = np.dot(base_features, projection)
         feature_vec = feature_vec / (np.linalg.norm(feature_vec) + 1e-7)
 
-        # ACTUALLY USE THE TRAINED TM WEIGHTS AND BIAS
         if self.model_loaded and self.weights is not None and self.bias is not None:
             raw_logits = np.dot(feature_vec, self.weights) + self.bias
         else:
-            # Fallback if weights.bin is missing
             raw_logits = np.array([0.0, 0.0, 0.0])
             if excluded or contradiction or serial_mismatch or not covered:
                 raw_logits[0] = 3.8
@@ -71,7 +67,6 @@ class TeachableMachineService:
             else:
                 raw_logits[2] = 3.9
 
-        # Apply softmax
         exp_logits = np.exp(raw_logits - np.max(raw_logits))
         probs = exp_logits / np.sum(exp_logits)
         
@@ -100,11 +95,9 @@ class TeachableMachineService:
             img = Image.open(io.BytesIO(image_bytes)).convert("RGB").resize((224, 224))
             arr = np.array(img, dtype=np.float32) / 255.0
             
-            # Extract basic statistical visual descriptors
             mean_intensity = float(arr.mean())
             contrast = float(arr.std())
             
-            # Compute dynamic logit from visual distribution and trained bias
             logits = np.array([
                 mean_intensity * 2.0 - 1.0 + (float(self.bias[0]) if self.bias is not None else 0.0),
                 contrast * 2.5 - 0.5 + (float(self.bias[1]) if self.bias is not None else 0.0),
@@ -220,5 +213,4 @@ def predict_claim_card(image_input: Any = None) -> Dict[str, Any]:
     return _tm_service._fallback_prediction()
 
 
-# Alias
 predict_visual_claim = predict_claim_card

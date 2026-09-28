@@ -23,7 +23,6 @@ class JSONFormatter(logging.Formatter):
             "line": record.lineno,
         }
 
-        # Include request_id if present
         if hasattr(record, "request_id"):
             log_entry["request_id"] = getattr(record, "request_id")
 
@@ -47,11 +46,9 @@ def setup_logging(
     root_logger = logging.getLogger("assurex")
     root_logger.setLevel(numeric_level)
 
-    # Avoid duplicate handlers on re-init
     if root_logger.hasHandlers():
         root_logger.handlers.clear()
 
-    # Formatter selection
     if log_format.lower() == "json":
         formatter = JSONFormatter(datefmt="%Y-%m-%dT%H:%M:%S%z")
     else:
@@ -60,13 +57,11 @@ def setup_logging(
             datefmt="%Y-%m-%d %H:%M:%S",
         )
 
-    # Console Handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(numeric_level)
     console_handler.setFormatter(formatter)
     root_logger.addHandler(console_handler)
 
-    # File Handler
     if log_file:
         log_path = Path(log_file).resolve()
         log_path.parent.mkdir(parents=True, exist_ok=True)

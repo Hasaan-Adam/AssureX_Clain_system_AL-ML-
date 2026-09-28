@@ -8,7 +8,6 @@ from datetime import datetime, date, timedelta
 from database.models import Warranty, Product
 from src.core.exceptions import ConflictError, NotFoundError, ValidationError
 
-#: Serials are unique per active warranty (SRS duplicate-claim/serial rules).
 SERIAL_PREFIX_DEFAULT = "SN"
 
 
@@ -58,7 +57,6 @@ def create_warranty(db: Session, warranty_data: Dict[str, Any], user_id: int) ->
         serial = f"{SERIAL_PREFIX_DEFAULT}-{int(time.time() * 1000)}"
     serial = serial.upper()
 
-    # A serial may only be registered once, and only by its current owner.
     existing_product = db.query(Product).filter(Product.serial_number == serial).first()
     if existing_product:
         if existing_product.owner_id != user_id:
@@ -302,7 +300,6 @@ def generate_expiry_alerts(db: Session, days_ahead: int = 30) -> Dict[str, Any]:
             
         days_left = (warr.expiry_date - today).days
         
-        # Check if an alert already exists for this warranty in the last 7 days
         recent_alert = db.query(Notification).filter(
             Notification.user_id == user_id,
             Notification.related_entity_type == "warranty",

@@ -185,7 +185,6 @@ def send_email(
             msg.attach(MIMEText(text_body, "plain", "utf-8"))
         msg.attach(MIMEText(html_body, "html", "utf-8"))
 
-        # Gmail standard TLS on port 587
         if smtp_port == 465:
             server = smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=10)
         else:
@@ -205,9 +204,6 @@ def send_email(
         return False
 
 
-# ----------------------------------------------------------------------
-# Specialized Lifecycle Notification Email Helpers
-# ----------------------------------------------------------------------
 
 def send_claim_submission_email(claim_number: str, user_email: str, user_name: str, product_name: str, fault_type: str) -> bool:
     """Notify customer that claim has been submitted."""

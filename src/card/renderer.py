@@ -18,11 +18,9 @@ from typing import Any, Dict, Optional, Tuple
 
 from PIL import Image, ImageDraw, ImageFont
 
-# Canvas dimensions
 DEFAULT_WIDTH = 800
 DEFAULT_HEIGHT = 600
 
-# Color Palette Defaults (Classic Slate)
 DEFAULT_THEME: Dict[str, Any] = {
     "name": "classic_slate",
     "canvas_bg": (241, 245, 249),       # slate-100
@@ -48,7 +46,6 @@ DEFAULT_THEME: Dict[str, Any] = {
     "footer_text": (148, 163, 184),     # slate-400
 }
 
-# Forbidden keys that must never be rendered
 FORBIDDEN_FIELDS = {
     "label",
     "target",
@@ -90,7 +87,6 @@ def get_font(size: int, bold: bool = False, mono: bool = False, font_family: Opt
             return ImageFont.truetype(candidate, size)
         except Exception:
             pass
-        # Check standard Windows Font path
         win_path = os.path.join(os.environ.get("WINDIR", "C:\\Windows"), "Fonts", candidate)
         if os.path.exists(win_path):
             try:
@@ -153,20 +149,16 @@ def render_claim_card(
     Returns:
         PIL.Image in RGB mode.
     """
-    # Strict sanitization
     data = _sanitize_claim(claim)
 
-    # Merge theme with default
     t = {**DEFAULT_THEME, **(theme or {})}
     for k in t:
         if k != "name" and isinstance(t[k], (tuple, list, str)):
             t[k] = _resolve_color(t[k])
 
-    # Initialize canvas
     img = Image.new("RGB", (width, height), color=t["canvas_bg"])
     draw = ImageDraw.Draw(img)
 
-    # Fonts
     font_header_title = get_font(18, bold=True, font_family=font_family)
     font_header_sub = get_font(11, bold=False, font_family=font_family)
     font_header_badge = get_font(10, bold=True, mono=True, font_family=font_family)
@@ -178,7 +170,6 @@ def render_claim_card(
     font_doc_stat = get_font(9, bold=False, font_family=font_family)
     font_footer = get_font(9, bold=False, font_family=font_family)
 
-    # Outer Card Box
     margin_x, margin_y = 16, 14
     card_x1, card_y1 = margin_x, margin_y
     card_x2, card_y2 = width - margin_x, height - margin_y
@@ -190,20 +181,17 @@ def render_claim_card(
         width=1,
     )
 
-    # Header Bar
     header_h = 60
     draw.rounded_rectangle(
         (card_x1, card_y1, card_x2, card_y1 + header_h),
         radius=10,
         fill=t["header_bg"],
     )
-    # Square off bottom of header inside card
     draw.rectangle(
         (card_x1, card_y1 + header_h - 10, card_x2, card_y1 + header_h),
         fill=t["header_bg"],
     )
 
-    # Header Text
     claim_id = _format_val(data.get("claim_id", "CLM-UNKNOWN"))
     sub_date = _format_val(data.get("claim_submission_date", "YYYY-MM-DD"))
     user_id = _format_val(data.get("user_id", "N/A"))
@@ -212,7 +200,6 @@ def render_claim_card(
     header_sub_str = f"Claim ID: {claim_id}   |   Submission Date: {sub_date}   |   Claimant: {user_id}"
     draw.text((card_x1 + 18, card_y1 + 36), header_sub_str, fill=t["header_sub"], font=font_header_sub)
 
-    # Header Badge (OCR / Verification Status)
     ocr_quality = str(data.get("ocr_quality", "high")).upper()
     ocr_bg = t["badge_yes_bg"] if ocr_quality == "HIGH" else (t["badge_warn_bg"] if ocr_quality == "MEDIUM" else t["badge_no_bg"])
     ocr_fg = t["badge_yes_fg"] if ocr_quality == "HIGH" else (t["badge_warn_fg"] if ocr_quality == "MEDIUM" else t["badge_no_fg"])
@@ -226,7 +213,6 @@ def render_claim_card(
         radius=4,
     )
 
-    # Section Grid Coordinates
     content_y = card_y1 + header_h + 10
     col_w = (card_x2 - card_x1 - 32) // 2  # Width of each 2-column box
     col1_x1 = card_x1 + 12
@@ -234,7 +220,6 @@ def render_claim_card(
     col2_x1 = col1_x2 + 8
     col2_x2 = card_x2 - 12
 
-    # Section 1: Product & Purchase (Row 1 Left)
     sec1_y1 = content_y
     sec1_y2 = sec1_y1 + 152
     draw.rounded_rectangle((col1_x1, sec1_y1, col1_x2, sec1_y2), radius=6, fill=t["section_bg"], outline=t["section_border"], width=1)
@@ -265,12 +250,10 @@ def render_claim_card(
         draw.text((col1_x1 + 125, cur_y), val, fill=t["text_primary"], font=font_val)
         cur_y += 20
 
-    # Serial Status Pill in Section 1
     s_bg = t["badge_yes_bg"] if serial_status == "match" else (t["badge_no_bg"] if serial_status == "mismatch" else t["badge_neutral_bg"])
     s_fg = t["badge_yes_fg"] if serial_status == "match" else (t["badge_no_fg"] if serial_status == "mismatch" else t["badge_neutral_fg"])
     _draw_badge(draw, (col1_x2 - 110, sec1_y1 + 6, col1_x2 - 8, sec1_y1 + 24), f"Serial: {serial_status.upper()}", s_bg, s_fg, font_badge)
 
-    # Section 2: Warranty Status & Coverage (Row 1 Right)
     sec2_y1 = content_y
     sec2_y2 = sec2_y1 + 152
     draw.rounded_rectangle((col2_x1, sec2_y1, col2_x2, sec2_y2), radius=6, fill=t["section_bg"], outline=t["section_border"], width=1)
@@ -294,7 +277,6 @@ def render_claim_card(
     cur_y = sec2_y1 + 28
     for lbl, val in fields_s2:
         draw.text((col2_x1 + 10, cur_y), lbl, fill=t["text_secondary"], font=font_label)
-        # Highlight active status
         if "Active:" in lbl:
             fg = t["badge_yes_fg"] if w_active == "yes" else t["badge_no_fg"]
             draw.text((col2_x1 + 130, cur_y), val, fill=fg, font=font_label)
@@ -305,7 +287,6 @@ def render_claim_card(
             draw.text((col2_x1 + 130, cur_y), val, fill=t["text_primary"], font=font_val)
         cur_y += 20
 
-    # Warranty Status Pill in Section 2
     if w_active == "yes":
         w_badge_text = "ACTIVE"
     else:
@@ -317,7 +298,6 @@ def render_claim_card(
     w_fg = t["badge_yes_fg"] if w_active == "yes" else t["badge_no_fg"]
     _draw_badge(draw, (col2_x2 - 100, sec2_y1 + 6, col2_x2 - 8, sec2_y1 + 24), f"WTY: {w_badge_text}", w_bg, w_fg, font_badge)
 
-    # Section 3: Fault Details & Incident Timeline (Row 2 Left)
     sec3_y1 = sec1_y2 + 8
     sec3_y2 = sec3_y1 + 160
     draw.rounded_rectangle((col1_x1, sec3_y1, col1_x2, sec3_y2), radius=6, fill=t["section_bg"], outline=t["section_border"], width=1)
@@ -346,10 +326,8 @@ def render_claim_card(
         draw.text((col1_x1 + 125, cur_y), val, fill=t["text_primary"], font=font_val)
         cur_y += 19
 
-    # Wrapped Fault Description
     desc_label = "Description:"
     draw.text((col1_x1 + 10, cur_y + 1), desc_label, fill=t["text_secondary"], font=font_label)
-    # Simple line wrap for description
     desc_clean = fault_desc.replace("\n", " ")
     if len(desc_clean) > 42:
         d1 = desc_clean[:42]
@@ -359,7 +337,6 @@ def render_claim_card(
     else:
         draw.text((col1_x1 + 125, cur_y + 1), desc_clean, fill=t["text_muted"], font=font_val)
 
-    # Section 4: Repair History & Integrity Checks (Row 2 Right)
     sec4_y1 = sec2_y2 + 8
     sec4_y2 = sec4_y1 + 160
     draw.rounded_rectangle((col2_x1, sec4_y1, col2_x2, sec4_y2), radius=6, fill=t["section_bg"], outline=t["section_border"], width=1)
@@ -392,7 +369,6 @@ def render_claim_card(
             draw.text((col2_x1 + 130, cur_y), val, fill=t["text_primary"], font=font_val)
         cur_y += 19
 
-    # Section 5: Document Verification Checklist (Row 3 Full Width)
     sec5_y1 = sec3_y2 + 8
     sec5_y2 = sec5_y1 + 100
     sec5_x1 = card_x1 + 12
@@ -403,13 +379,11 @@ def render_claim_card(
     missing_cnt = _format_val(data.get("missing_document_count", "0"))
     draw.text((sec5_x1 + 10, sec5_y1 + 8), "5. EVIDENCE & DOCUMENT VERIFICATION CHECKLIST", fill=t["section_title"], font=font_section_title)
     
-    # Mandatory complete badge
     m_bg = t["badge_yes_bg"] if mand_complete == "yes" else t["badge_no_bg"]
     m_fg = t["badge_yes_fg"] if mand_complete == "yes" else t["badge_no_fg"]
     m_txt = "ALL MANDATORY DOCS PRESENT" if mand_complete == "yes" else f"MISSING DOCS: {missing_cnt}"
     _draw_badge(draw, (sec5_x2 - 210, sec5_y1 + 6, sec5_x2 - 8, sec5_y1 + 24), m_txt, m_bg, m_fg, font_badge)
 
-    # Document Chips Checklist
     doc_items = [
         ("Receipt", str(data.get("receipt_available", "no")).lower() == "yes"),
         ("Warranty Card", str(data.get("warranty_card_available", "no")).lower() == "yes"),
@@ -436,18 +410,15 @@ def render_claim_card(
         c_border = (187, 247, 208) if is_avail else (254, 202, 202)
 
         draw.rounded_rectangle((cx1, cy1, cx2, cy2), radius=4, fill=t["card_bg"], outline=c_border, width=1)
-        # Inner mini-banner
         draw.rounded_rectangle((cx1 + 2, cy1 + 2, cx2 - 2, cy1 + 20), radius=2, fill=c_bg)
         stat_text = "[ OK ]" if is_avail else "[ MISSING ]"
         _draw_badge(draw, (cx1 + 4, cy1 + 3, cx2 - 4, cy1 + 19), stat_text, c_bg, c_fg, font_doc_stat)
 
-        # Label below
         tb = draw.textbbox((0, 0), doc_name, font=font_doc_title)
         tw = tb[2] - tb[0]
         tx = cx1 + (chip_w - tw) // 2
         draw.text((tx, cy1 + 27), doc_name, fill=t["text_primary"], font=font_doc_title)
 
-    # Footer
     footer_text = "AssureX Claim Intelligence System  •  Standardized Claim Summary Record  •  Computer Vision Input"
     draw.text((card_x1 + 16, card_y2 - 18), footer_text, fill=t["footer_text"], font=font_footer)
 

@@ -15,15 +15,12 @@ from __future__ import annotations
 
 from typing import Any, Dict, Iterable, List, Optional
 
-#: Mandatory for every category.
 MANDATORY_DOCS: tuple = ("receipt", "fault_evidence")
 
-#: Optional evidence that improves confidence.
 OPTIONAL_DOCS: tuple = ("warranty_card", "product_image", "serial_evidence", "repair_report")
 
 ALL_DOCS: tuple = MANDATORY_DOCS + OPTIONAL_DOCS
 
-#: Extra documents a category always needs on top of the mandatory bundle.
 CATEGORY_REQUIRED_DOCS: Dict[str, tuple] = {
     "electronics": ("serial_evidence",),
     "laptop": ("serial_evidence",),
@@ -35,7 +32,6 @@ CATEGORY_REQUIRED_DOCS: Dict[str, tuple] = {
     "other": (),
 }
 
-#: Legacy / UI vocabulary mapped onto the canonical names.
 DOC_ALIASES: Dict[str, str] = {
     "purchase_invoice": "receipt",
     "purchase_receipt": "receipt",
@@ -75,7 +71,6 @@ def _available_from_claim(claim_data: Dict[str, Any]) -> List[str]:
     for doc in ALL_DOCS:
         if _is_available(claim_data.get(f"{doc}_available")):
             available.append(doc)
-    # Documents may also be supplied as a real list of document types.
     for key in ("available_doc_types", "documents", "document_types"):
         for entry in claim_data.get(key) or []:
             name = _canonical(getattr(entry, "value", entry))

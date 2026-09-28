@@ -18,7 +18,6 @@ ALLOWED_MIME_TYPES: Set[str] = {
 }
 MAX_FILE_SIZE_BYTES: int = 10 * 1024 * 1024  # 10 MB
 
-# Regex to strip potentially malicious characters from filenames
 SAFE_FILENAME_PATTERN = re.compile(r"[^a-zA-Z0-9_.-]")
 
 

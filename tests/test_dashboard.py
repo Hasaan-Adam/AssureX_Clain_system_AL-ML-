@@ -7,7 +7,6 @@ import pytest
 
 def test_user_dashboard(client, customer_headers, sample_warranty):
     """Test customer personal dashboard statistics via /dashboard/user and /dashboard/customer."""
-    # Submit claim
     client.post(
         "/api/v1/claims/",
         json={
@@ -29,7 +28,6 @@ def test_user_dashboard(client, customer_headers, sample_warranty):
     assert data["total_claims"] >= 1
     assert "claims_by_status" in data
 
-    # Test /dashboard/customer alias
     cust_res = client.get("/api/v1/dashboard/customer", headers=customer_headers)
     assert cust_res.status_code == 200
     assert cust_res.json()["total_warranties"] == data["total_warranties"]

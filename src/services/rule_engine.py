@@ -10,7 +10,6 @@ def load_policy(category_code: str) -> Dict[str, Any]:
     """Load JSON policy file for a specific product category with caching."""
     cat = (category_code or "electronics").strip().lower()
     
-    # Normalize category name
     if "mob" in cat or "phone" in cat:
         filename = "mobile_phones.json"
     elif "app" in cat or "home" in cat or "refrig" in cat or "wash" in cat:
@@ -23,7 +22,6 @@ def load_policy(category_code: str) -> Dict[str, Any]:
         
     policy_path = POLICIES_DIR / filename
     if not policy_path.exists():
-        # Fallback to default
         policy_path = POLICIES_DIR / "electronics.json"
         
     if policy_path.exists():
@@ -32,7 +30,6 @@ def load_policy(category_code: str) -> Dict[str, Any]:
             _POLICY_CACHE[filename] = policy_data
             return policy_data
             
-    # Default fallback object
     return {
         "category_code": category_code.upper() if category_code else "ELECTRONICS",
         "category_name": "General Electronics",
@@ -76,7 +73,6 @@ def evaluate_claim_rules(claim_data: Dict[str, Any], policy: Optional[Dict[str, 
     warnings = []
     rule_breakdown = []
     
-    # 1. Warranty Active & Grace Period Check
     warranty_active = claim_data.get("warranty_active") == "yes" or claim_data.get("warranty_status") == "ACTIVE"
     remaining_days = claim_data.get("remaining_warranty_days", 0)
     is_grace = claim_data.get("is_grace_period", 0)
@@ -105,7 +101,6 @@ def evaluate_claim_rules(claim_data: Dict[str, Any], policy: Optional[Dict[str, 
             "detail": "Warranty active"
         })
     
-    # 2. Excluded Damage & Policy Exclusions Check
     damage_type = (claim_data.get("damage_type") or "").lower()
     excluded_flag = claim_data.get("excluded_damage") == "yes"
     covered_fault = claim_data.get("covered_fault") == "yes" or (claim_data.get("covered_fault") is None and not excluded_flag)
@@ -143,7 +138,6 @@ def evaluate_claim_rules(claim_data: Dict[str, Any], policy: Optional[Dict[str, 
             "detail": "Covered fault type"
         })
     
-    # 3. Unauthorized Repair Check
     repair_count = claim_data.get("repair_history_count", 0)
     repair_auth = str(claim_data.get("repair_authorized", "yes")).lower()
     if repair_count > 0 and repair_auth in ("unauthorized", "no", "false"):
@@ -155,7 +149,6 @@ def evaluate_claim_rules(claim_data: Dict[str, Any], policy: Optional[Dict[str, 
             "detail": "Prior unauthorized repairs detected"
         })
         
-    # 4. Serial Number Check
     serial_status = claim_data.get("serial_status", "match")
     if serial_status == "mismatch":
         violations.append("POLICY_SERIAL_MISMATCH: Serial number mismatch")
@@ -181,7 +174,6 @@ def evaluate_claim_rules(claim_data: Dict[str, Any], policy: Optional[Dict[str, 
             "detail": "Serial match"
         })
     
-    # 5. Reporting Window Check
     reporting_days = claim_data.get("claim_reporting_days", 0)
     within_period = claim_data.get("within_reporting_period") != "no"
     if reporting_days > 45 or not within_period:
@@ -208,7 +200,6 @@ def evaluate_claim_rules(claim_data: Dict[str, Any], policy: Optional[Dict[str, 
             "detail": "Within reporting window"
         })
     
-    # 6. Missing Mandatory Documents Check
     missing_docs = claim_data.get("missing_document_count", 0)
     receipt_avail = claim_data.get("receipt_available") != "no"
     proof = str(claim_data.get("proof_of_purchase", "yes")).lower()
@@ -230,7 +221,6 @@ def evaluate_claim_rules(claim_data: Dict[str, Any], policy: Optional[Dict[str, 
             "detail": "All documents present"
         })
     
-    # Final Decision Synthesis
     if violations:
         decision = "REJECT"
         passed = False

@@ -14,9 +14,7 @@ from PIL import Image
 
 from src.card.renderer import DEFAULT_HEIGHT, DEFAULT_WIDTH, render_claim_card
 
-# Predefined high-quality visual style themes for variations
 VARIATION_THEMES: List[Dict[str, Any]] = [
-    # Theme 1: Cool Indigo / Azure
     {
         "name": "cool_indigo",
         "canvas_bg": (238, 242, 255),       # indigo-50
@@ -42,7 +40,6 @@ VARIATION_THEMES: List[Dict[str, Any]] = [
         "footer_text": (129, 140, 248),     # indigo-400
         "font_family": "segoeui.ttf",
     },
-    # Theme 2: Warm Amber / Sand
     {
         "name": "warm_amber",
         "canvas_bg": (254, 243, 199),       # amber-100
@@ -68,7 +65,6 @@ VARIATION_THEMES: List[Dict[str, Any]] = [
         "footer_text": (180, 83, 9),        # amber-700
         "font_family": "calibri.ttf",
     },
-    # Theme 3: Emerald Sage
     {
         "name": "emerald_sage",
         "canvas_bg": (236, 253, 245),       # emerald-50
@@ -94,7 +90,6 @@ VARIATION_THEMES: List[Dict[str, Any]] = [
         "footer_text": (52, 211, 153),      # emerald-400
         "font_family": "arial.ttf",
     },
-    # Theme 4: High Contrast Graphite
     {
         "name": "graphite_contrast",
         "canvas_bg": (229, 231, 235),       # gray-200

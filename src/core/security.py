@@ -11,7 +11,6 @@ from passlib.context import CryptContext
 from src.core.config import settings
 from src.core.exceptions import AuthenticationError
 
-# Password hashing with 12 bcrypt rounds
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
 
 SECRET_KEY = settings.security.secret_key
@@ -120,6 +119,5 @@ def verify_password_reset_token(token: str) -> Optional[str]:
         return None
 
 
-# Aliases for compatibility
 hash_password = get_password_hash
 UnauthorizedException = AuthenticationError

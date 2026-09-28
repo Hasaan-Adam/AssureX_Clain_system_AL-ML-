@@ -27,7 +27,6 @@ def parse_date(date_val: Union[str, date, datetime]) -> date:
         return date_val
     if isinstance(date_val, str):
         clean_val = date_val.strip()
-        # Common format attempts
         formats = [
             "%Y-%m-%d",
             "%Y/%m/%d",
@@ -43,7 +42,6 @@ def parse_date(date_val: Union[str, date, datetime]) -> date:
                 return datetime.strptime(clean_val, fmt).date()
             except ValueError:
                 continue
-        # Fallback to date.fromisoformat
         try:
             return date.fromisoformat(clean_val.split("T")[0])
         except ValueError as exc:
@@ -69,7 +67,6 @@ def parse_datetime(dt_val: Union[str, datetime]) -> datetime:
             return parsed.astimezone(timezone.utc)
         except ValueError:
             pass
-        # Fallback to date parsing
         d = parse_date(clean_val)
         return datetime.combine(d, time.min, tzinfo=timezone.utc)
 
@@ -94,12 +91,9 @@ def calculate_warranty_expiry(purchase_date: Union[str, date, datetime], duratio
     Accounts for month boundaries and leap years.
     """
     p_date = parse_date(purchase_date)
-    # Approximate or month-based addition
     year = p_date.year + (p_date.month + duration_months - 1) // 12
     month = (p_date.month + duration_months - 1) % 12 + 1
-    # Handle day overflow (e.g. Feb 29 -> Feb 28 in non-leap year or Jan 31 -> Apr 30)
     day = min(p_date.day, 28)
-    # Try actual day or backtrack to last day of target month
     for try_day in range(p_date.day, 27, -1):
         try:
             return date(year, month, try_day)
@@ -126,14 +120,12 @@ def is_warranty_active(
     e_date = parse_date(end_date)
 
     if ref_date < s_date:
-        # Warranty not yet started
         return False, days_between(ref_date, s_date)
 
     days_until_expiry = days_between(ref_date, e_date)
     if days_until_expiry >= 0:
         return True, days_until_expiry
 
-    # It's past expiry date: check grace period
     overdue_days = abs(days_until_expiry)
     if overdue_days <= grace_period_days:
         return True, days_until_expiry

@@ -133,7 +133,6 @@ def format_error_response(
     return JSONResponse(status_code=status_code, content=content)
 
 
-# Aliases for compatibility
 ForbiddenException = AuthorizationError
 ConflictException = ConflictError
 EntityNotFoundException = NotFoundError
@@ -144,7 +143,6 @@ UnauthorizedException = AuthenticationError
 ValidationException = ValidationError
 
 
-# Convenience: raise directly from exceptions
 def raise_if(condition: bool, exception: AssureXBaseException) -> None:
     """Raise exception if condition is True, else no-op."""
     if condition:

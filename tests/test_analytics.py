@@ -14,7 +14,6 @@ import pytest
 
 def test_analytics_overview(client, staff_headers, sample_warranty):
     """Test retrieving complete analytics overview with staff credentials."""
-    # Seed a claim
     client.post(
         "/api/v1/claims/",
         json={
@@ -30,7 +29,6 @@ def test_analytics_overview(client, staff_headers, sample_warranty):
     assert response.status_code == 200
     data = response.json()
 
-    # Verify overview components
     assert "time_series" in data
     assert isinstance(data["time_series"], list)
     assert len(data["time_series"]) > 0

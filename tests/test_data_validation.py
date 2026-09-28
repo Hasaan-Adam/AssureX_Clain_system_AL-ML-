@@ -71,7 +71,6 @@ def test_claim_card_rendering():
         "has_contradiction": "no",
         "is_duplicate": "no",
         "ocr_quality": "high",
-        # Intentionally include target labels to test sanitization
         "label": "Valid Claim",
         "prediction": "Valid Claim",
         "confidence": "0.99",

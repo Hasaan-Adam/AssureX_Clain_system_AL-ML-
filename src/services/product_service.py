@@ -14,7 +14,6 @@ def create_product(db: Session, product_data: Dict[str, Any], user_id: int) -> P
     ts = int(time.time() * 1000)
     serial_prefix = product_data.get("serial_prefix") or "SN"
 
-    # Use provided serial number if given, else auto-generate
     serial_number = (
         product_data.get("serial_number")
         or f"{serial_prefix}-{ts}"

@@ -69,7 +69,6 @@ def register_model_version(
     """
     registry = load_registry(versions_path)
     
-    # Ensure artifacts dictionary
     if artifacts is None:
         artifacts = {
             "model_path": "model/python/claim_classifier.joblib",
@@ -78,7 +77,6 @@ def register_model_version(
             "feature_columns_path": "model/python/feature_columns.json",
         }
 
-    # Clean serializable hyperparameters
     clean_params = {}
     for k, v in hyperparameters.items():
         if isinstance(v, (int, float, str, bool, list, dict)) or v is None:
@@ -86,7 +84,6 @@ def register_model_version(
         else:
             clean_params[k] = str(v)
 
-    # SRS Requirement Check (Test/Val Accuracy >= 85%)
     test_acc = metrics.get("test_accuracy", metrics.get("val_accuracy", 0.0))
     srs_met = bool(test_acc >= 0.85)
 
@@ -103,7 +100,6 @@ def register_model_version(
         "artifacts": artifacts,
     }
 
-    # Update models list (mark previous ones archived if needed or keep history)
     existing_models = registry.get("models", [])
     updated_models = []
     found = False
@@ -151,7 +147,6 @@ def update_model_card(
 
     content = f"""# Model Card: AssureX Claim Classifier ({version_entry.get('version', 'v1.0.0')})
 
-## Model Overview
 - **Model Name:** AssureX Claim Classifier
 - **Model Version:** `{version_entry.get('version', 'v1.0.0')}`
 - **Algorithm:** `{version_entry.get('algorithm', 'XGBClassifier')}`
@@ -162,7 +157,6 @@ def update_model_card(
 
 ---
 
-## Intended Use
 The AssureX Claim Classifier is an automated ML model for warranty claim triage. It classifies warranty claims into three discrete operational buckets:
 1. **Valid Claim:** Legitimate warranty claim with active coverage, genuine serial, valid documentation, and covered defect.
 2. **Invalid Claim:** Fraudulent or out-of-warranty claim (e.g., expired warranty, excluded damage type, serial mismatch, duplicate submission).
@@ -170,7 +164,6 @@ The AssureX Claim Classifier is an automated ML model for warranty claim triage.
 
 ---
 
-## Performance Summary
 
 | Split | Metric | Value | Requirement |
 |-------|--------|-------|-------------|
@@ -182,14 +175,12 @@ The AssureX Claim Classifier is an automated ML model for warranty claim triage.
 
 ---
 
-## Hyperparameters
 ```json
 {json.dumps(params, indent=2)}
 ```
 
 ---
 
-## Feature Engineering & Preprocessing
 - **Numeric Features Imputation & Scaling:** Median imputation + StandardScaler.
 - **Categorical Features Encoding:** Missing constant imputation + OneHotEncoder (`handle_unknown='ignore'`).
 - **Engineered Domain Features:**
@@ -204,7 +195,6 @@ The AssureX Claim Classifier is an automated ML model for warranty claim triage.
 
 ---
 
-## Artifact Paths
 ```
 model/
 └── python/

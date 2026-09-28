@@ -51,7 +51,6 @@ def test_login_success(client, customer_user):
     assert data["token_type"] == "bearer"
     assert data["user"]["email"] == customer_user.email
 
-    # Validate token contents
     payload_decoded = decode_token(data["access_token"])
     assert payload_decoded["sub"] == str(customer_user.id)
     assert payload_decoded["role"] == customer_user.role
@@ -134,11 +133,9 @@ def test_tampered_token_rejected(client, customer_token):
 
 def test_missing_and_malformed_auth_header(client):
     """Test missing or malformed Authorization header returns 401."""
-    # No header
     res_no_auth = client.get("/api/v1/auth/me")
     assert res_no_auth.status_code == 401
 
-    # Malformed header
     res_malformed = client.get("/api/v1/auth/me", headers={"Authorization": "Bearer not-a-valid-jwt"})
     assert res_malformed.status_code == 401
 
@@ -156,7 +153,6 @@ def test_refresh_with_expired_or_invalid_token_fails(client, customer_user):
     res_expired = client.post("/api/v1/auth/refresh", json={"refresh_token": expired_ref})
     assert res_expired.status_code == 401
 
-    # Access token used as refresh token should be rejected
     from src.core.security import create_access_token
     access_tok = create_access_token(subject=customer_user.id, role=customer_user.role)
     res_type_mismatch = client.post("/api/v1/auth/refresh", json={"refresh_token": access_tok})
@@ -180,7 +176,6 @@ def test_inactive_user_access_blocked(client, test_db):
     test_db.commit()
     test_db.refresh(inactive_user)
 
-    # Login attempt (returns 401 Unauthorized for disabled account)
     login_res = client.post(
         "/api/v1/auth/login",
         json={"email": "inactive@assurex.com", "password": "Password123!"},
@@ -188,7 +183,6 @@ def test_inactive_user_access_blocked(client, test_db):
     assert login_res.status_code == 401
     assert "inactive" in login_res.json()["error"]["message"].lower()
 
-    # Direct token attempt with existing token (returns 403 Forbidden for disabled user)
     token = create_access_token(subject=inactive_user.id, role=inactive_user.role)
     me_res = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert me_res.status_code == 403

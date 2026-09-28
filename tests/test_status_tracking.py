@@ -26,12 +26,10 @@ def test_status_tracking_timeline(test_db, sample_warranty, customer_user, revie
     test_db.add(claim)
     test_db.commit()
 
-    # Step 1: AI adjudication in progress
     c1 = transition_claim_status(test_db, claim.id, "under_review", user_id=reviewer_user.id)
     assert c1.status == "under_review"
     assert c1.final_decision == "MANUAL_REVIEW"
 
-    # Step 2: Rejected by reviewer
     c2 = transition_claim_status(
         test_db, claim.id, "rejected", user_id=reviewer_user.id, reason="Out of warranty period."
     )
@@ -39,7 +37,6 @@ def test_status_tracking_timeline(test_db, sample_warranty, customer_user, revie
     assert c2.final_decision == "REJECT"
     assert c2.rejection_reason == "Out of warranty period."
 
-    # Step 3: Re-assigned and approved
     c3 = transition_claim_status(test_db, claim.id, "under_review", user_id=reviewer_user.id)
     assert c3.status == "under_review"
     c4 = transition_claim_status(
