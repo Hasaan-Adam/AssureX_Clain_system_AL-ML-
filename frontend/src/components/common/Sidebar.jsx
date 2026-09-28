@@ -57,7 +57,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
         items: [
           { name: 'Review Queue', path: '/reviews', icon: CheckSquare, badge: 'Queue' },
           { name: 'Claims Registry', path: '/claims', icon: FileText },
-          { name: 'File Customer Claim', path: '/claims/new', icon: PlusCircle, badge: 'AI' },
+          { name: 'File Customer Claim', path: '/claims/new', icon: PlusCircle },
           { name: 'Warranty Registry', path: '/warranties', icon: ShieldCheck },
           { name: 'Product Catalog', path: '/products', icon: Package },
         ],
@@ -77,7 +77,7 @@ export const Sidebar = ({ isOpen, onClose }) => {
         items: [
           { name: 'Claim Dashboard', path: '/dashboard', icon: LayoutDashboard },
           { name: 'My Claims', path: '/claims', icon: FileText },
-          { name: 'Submit New Claim', path: '/claims/new', icon: PlusCircle, badge: 'AI' },
+          { name: 'Submit New Claim', path: '/claims/new', icon: PlusCircle },
           { name: 'My Warranties', path: '/warranties', icon: ShieldCheck },
           { name: 'Product Catalog', path: '/products', icon: Package },
         ],
