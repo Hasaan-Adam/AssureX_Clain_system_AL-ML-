@@ -367,11 +367,11 @@ const LandingPage = () => {
           <div className="flex flex-col lg:flex-row items-center gap-16">
             <div className="w-full lg:w-1/2 space-y-8">
               <div>
-                <span className="text-brand-400 font-bold tracking-wider text-sm uppercase">Our AI Engine</span>
-                <h2 className="text-4xl md:text-5xl font-extrabold mt-2 leading-tight">Two Models, One<br />Confident Decision</h2>
+                <span className="text-brand-400 font-bold tracking-wider text-sm uppercase">How It Works</span>
+                <h2 className="text-4xl md:text-5xl font-extrabold mt-2 leading-tight">Smart Claim<br />Processing</h2>
               </div>
               <p className="text-lg text-slate-300 leading-relaxed">
-                We built a hybrid ensemble that first runs deterministic policy rules, then passes the claim through a trained tabular ML model, and finally cross-validates the visual evidence with Google Teachable Machine. Only when all systems agree does the claim get auto-approved.
+                Our application checks the uploaded documents and claim details to verify if the warranty is valid. It uses a custom Python model and Google Teachable Machine to help evaluate the claim. If all the details match, the claim is approved quickly. If anything is missing or incorrect, it is sent to the reviewer.
               </p>
               
               <div className="space-y-4">
@@ -380,8 +380,8 @@ const LandingPage = () => {
                     <Brain className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-white">Python ML (scikit-learn)</h4>
-                    <p className="text-slate-400 text-sm">Trained on 1,500 synthetic claims with 23 engineered features</p>
+                    <h4 className="font-bold text-white">Python Classification</h4>
+                    <p className="text-slate-400 text-sm">Evaluates claim details and generates a confidence score.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -389,8 +389,8 @@ const LandingPage = () => {
                     <Sparkles className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-white">Teachable Machine Vision</h4>
-                    <p className="text-slate-400 text-sm">Trained on 224&times;224 RGB claim card images</p>
+                    <h4 className="font-bold text-white">Google Teachable Machine</h4>
+                    <p className="text-slate-400 text-sm">Visually verifies the Claim Summary Card to double-check the result.</p>
                   </div>
                 </div>
               </div>
@@ -400,14 +400,14 @@ const LandingPage = () => {
               <div className="absolute inset-0 bg-brand-500/20 blur-[100px] rounded-full pointer-events-none"></div>
               <div className="relative bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6 md:p-8 shadow-2xl shadow-brand-900/50">
                 <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                  <Cpu className="w-6 h-6 text-brand-400" /> AI Adjudication Pipeline
+                  <Cpu className="w-6 h-6 text-brand-400" /> Evaluation Process
                 </h3>
                 
                 <div className="space-y-4 mb-8">
                   <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="font-medium text-sm text-slate-300">1. Rule Engine</span>
-                      <span className="text-xs text-emerald-400 flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> Policy validated</span>
+                      <span className="font-medium text-sm text-slate-300">1. Policy Checking</span>
+                      <span className="text-xs text-emerald-400 flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> Validated</span>
                     </div>
                     <div className="w-full bg-slate-900 rounded-full h-2">
                       <div className="bg-emerald-500 h-2 rounded-full w-full"></div>
@@ -416,7 +416,7 @@ const LandingPage = () => {
                   
                   <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="font-medium text-sm text-slate-300">2. ML Model</span>
+                      <span className="font-medium text-sm text-slate-300">2. Python Model Check</span>
                       <span className="text-xs text-brand-400">89% confidence</span>
                     </div>
                     <div className="w-full bg-slate-900 rounded-full h-2">
@@ -426,8 +426,8 @@ const LandingPage = () => {
                   
                   <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="font-medium text-sm text-slate-300">3. Vision Model</span>
-                      <span className="text-xs text-purple-400">84% match</span>
+                      <span className="font-medium text-sm text-slate-300">3. Google Teachable Machine</span>
+                      <span className="text-xs text-purple-400">84% confidence</span>
                     </div>
                     <div className="w-full bg-slate-900 rounded-full h-2">
                       <div className="bg-purple-500 h-2 rounded-full w-[84%]"></div>
@@ -437,7 +437,7 @@ const LandingPage = () => {
                 
                 <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 text-center">
                   <div className="text-emerald-400 font-bold text-xl tracking-wide flex items-center justify-center gap-2">
-                    <ShieldCheck className="w-6 h-6" /> AUTO APPROVED
+                    <ShieldCheck className="w-6 h-6" /> CLAIM APPROVED
                   </div>
                 </div>
               </div>
