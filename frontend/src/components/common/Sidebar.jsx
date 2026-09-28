@@ -16,12 +16,13 @@ import {
   User as UserIcon,
   Users,
   Circle,
-  Download
+  Download,
+  LogOut
 } from 'lucide-react';
 import Badge from './Badge';
 
 export const Sidebar = ({ isOpen, onClose }) => {
-  const { user, isAdmin, isReviewer, isStaff } = useAuth();
+  const { user, isAdmin, isReviewer, isStaff, logout } = useAuth();
 
   let navItems = [];
 
@@ -167,23 +168,15 @@ export const Sidebar = ({ isOpen, onClose }) => {
           </div>
         </div>
 
-        {/* Bottom AI Status Indicator */}
+        {/* Bottom Logout Button */}
         <div className="p-4 mt-auto border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-            <div className="relative flex h-3 w-3 shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3 text-brand-500" />
-                AssureX AI v1.0 Active
-              </span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                System operational
-              </span>
-            </div>
-          </div>
+          <button
+            onClick={logout}
+            className="w-full flex items-center justify-center gap-2 p-2.5 rounded-xl text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/20 dark:hover:bg-red-900/40 transition-colors border border-red-100 dark:border-red-900/30"
+          >
+            <LogOut className="w-4 h-4" />
+            Sign Out
+          </button>
         </div>
       </aside>
     </>
