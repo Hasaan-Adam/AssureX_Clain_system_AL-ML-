@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Pipeline Diagrams</title>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; background-color: #f8f9fa; color: #333; }
+        .diagram-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 40px; }
+        h2 { border-bottom: 2px solid #0ea5e9; padding-bottom: 10px; margin-top: 0; color: #0f172a; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #cbd5e1; padding: 12px; text-align: left; }
+        th { background-color: #f1f5f9; }
+        .formula { background: #f1f5f9; padding: 10px; border-left: 4px solid #0ea5e9; margin: 10px 0; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>AssureX Claim Engine - ML Pipeline & Testing Diagrams</h1>
+    <p>Open this file in your browser to view the diagrams. You can take screenshots to add to your Word Document or Presentation.</p>
+
+    <div class="diagram-container">
+        <h2>1. Data Processing and Feature-Engineering Steps</h2>
+        <div class="mermaid">
+        flowchart TD
+            A[(Raw Claim Data)] --> B[Data Cleaning]
+            B --> C{Missing Values?}
+            C -- Yes --> D[Imputation & Handling]
+            C -- No --> E[Feature Engineering]
+            D --> E
+            E --> F[Create 'claim_amount_ratio']
+            E --> G[Extract 'days_since_purchase']
+            E --> H[Encode Categorical Variables]
+            F --> I[Feature Scaling & Normalization]
+            G --> I
+            H --> I
+            I --> J[(Processed Dataset)]
+            J --> K[Train/Test Split 80:20]
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>2. Python Model - Training Procedure</h2>
+        <div class="mermaid">
+        flowchart TD
+            A[Processed Tabular Data] --> B[Define Model Architecture]
+            B --> C[Initialize scikit-learn Pipeline]
+            C --> D[Random Forest / XGBoost]
+            D --> E[K-Fold Cross Validation]
+            E --> F[Hyperparameter Tuning]
+            F --> G[Train Final Model on 80% Data]
+            G --> H[Export Model weights]
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>3. Google Teachable Machine Training Procedure</h2>
+        <div class="mermaid">
+        flowchart LR
+            A[Collect Receipt & Damage Images] --> B[Upload to TM Console]
+            B --> C[Define Classes]
+            C --> C1[Valid Claim]
+            C --> C2[Fake/Invalid Claim]
+            C1 --> D[Train Neural Network]
+            C2 --> D
+            D --> E[Evaluate Preview]
+            E --> F[Export Model]
+            F --> G[model.json & weights.bin]
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>4. Model Evaluation</h2>
+        <div class="mermaid">
+        flowchart TD
+            A[Trained Python Model] --> B[Input: 20% Test Dataset]
+            A[Trained TM Model] --> C[Input: Unseen Image Set]
+            B --> D[Generate Predictions]
+            C --> D
+            D --> E[Calculate Metrics]
+            E --> F[Accuracy]
+            E --> G[Precision]
+            E --> H[Recall]
+            E --> I[F1-Score]
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>5. Confusion Matrix</h2>
+        <table>
+            <tr>
+                <th></th>
+                <th>Predicted: Valid Claim</th>
+                <th>Predicted: Fake Claim</th>
+            </tr>
+            <tr>
+                <th>Actual: Valid Claim</th>
+                <td><strong>True Positive (TP)</strong><br>Correctly approved</td>
+                <td><strong>False Negative (FN)</strong><br>Wrongly rejected</td>
+            </tr>
+            <tr>
+                <th>Actual: Fake Claim</th>
+                <td><strong>False Positive (FP)</strong><br>Wrongly approved</td>
+                <td><strong>True Negative (TN)</strong><br>Correctly rejected</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="diagram-container">
+        <h2>6. Accuracy, Precision, Recall and F1-Score</h2>
+        <p>These are the standard evaluation metrics derived from the Confusion Matrix:</p>
+        <div class="formula">Accuracy = (TP + TN) / (TP + TN + FP + FN)</div>
+        <div class="formula">Precision = TP / (TP + FP)</div>
+        <div class="formula">Recall (Sensitivity) = TP / (TP + FN)</div>
+        <div class="formula">F1-Score = 2 * (Precision * Recall) / (Precision + Recall)</div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>7. Model Prediction and Confidence Comparison</h2>
+        <div class="mermaid">
+        flowchart TD
+            A[New Claim Submitted] --> B[Data split to Models]
+            B --> C[Python Model]
+            B --> D[Vision Model]
+            C --> E[Python Confidence Score]
+            D --> F[Vision Confidence Score]
+            E --> G{Are both > 85%?}
+            F --> G
+            G -- Yes --> H{Do classes match?}
+            G -- No --> I[Send to Manual Review]
+            H -- Yes --> J[Auto-Approve Claim]
+            H -- No --> I
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>8. Testing Strategy</h2>
+        <div class="mermaid">
+        flowchart LR
+            A[Unit Testing] --> B[Integration Testing]
+            B --> C[System/E2E Testing]
+            C --> D[User Acceptance Testing UAT]
+            A -.-> A1[Test individual functions]
+            B -.-> B1[Test API & DB together]
+            C -.-> C1[Test full UI workflow]
+            D -.-> D1[Client validates features]
+        </div>
+    </div>
+</body>
+</html>
