@@ -1,0 +1,39 @@
+{
+  "modelTopology": {
+    "class_name": "Sequential",
+    "config": {
+      "name": "sequential_1",
+      "layers": [
+        {
+          "class_name": "Dense",
+          "config": {
+            "units": 3,
+            "activation": "softmax",
+            "name": "dense_output"
+          }
+        }
+      ]
+    }
+  },
+  "weightsManifest": [
+    {
+      "paths": ["weights.bin"],
+      "weights": [
+        {
+          "name": "dense_output/kernel",
+          "shape": [1280, 3],
+          "dtype": "float32"
+        },
+        {
+          "name": "dense_output/bias",
+          "shape": [3],
+          "dtype": "float32"
+        }
+      ]
+    }
+  ],
+  "labels": ["Valid Claim", "Invalid Claim", "Manual Review"],
+  "modelName": "AssureX_TM_Claim_Classifier",
+  "version": "v1.0.0",
+  "imageSize": 224
+}

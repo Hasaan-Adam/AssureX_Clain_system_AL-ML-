@@ -1,0 +1,10 @@
+﻿{
+  " packageVersion\: \0.8.5\,
+ \modelName\: \AssureX_TM_Claim_Classifier\,
+ \description\: \3-class visual claim summary card classifier\,
+ \timeStamp\: \2026-09-24T00:00:00.000Z\,
+ \userMetadata\: {},
+ \modelURL\: \model.json\,
+ \labels\: [\Valid Claim\, \Invalid Claim\, \Manual Review\],
+ \imageSize\: 224
+}
