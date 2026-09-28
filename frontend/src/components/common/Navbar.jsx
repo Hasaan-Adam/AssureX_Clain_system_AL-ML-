@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
-import { Bell, Menu, X, ChevronDown, LogOut, Settings, User as UserIcon } from 'lucide-react';
+import { Bell, Menu, X, ChevronDown, LogOut, Settings, User as UserIcon, LayoutDashboard, ShieldCheck } from 'lucide-react';
 import { timeAgo } from '../../utils/formatters';
 import Badge from './Badge';
 
@@ -62,8 +62,11 @@ export const Navbar = ({ onToggleSidebar, isSidebarOpen }) => {
             <img src="/logo.png" alt="AssureX Logo" className="w-7 h-7 rounded-lg object-contain shadow-sm" />
             <span className="text-base font-extrabold tracking-tight bg-gradient-to-r from-brand-600 to-blue-600 bg-clip-text text-transparent">AssureX</span>
           </div>
-          <div className="hidden md:block">
-            <h2 className="text-lg font-bold text-slate-800 tracking-tight">Command Center</h2>
+          <div className="hidden md:flex items-center gap-2.5">
+            <div className="p-1.5 bg-brand-50 dark:bg-brand-900/30 rounded-lg text-brand-600 dark:text-brand-400">
+              <LayoutDashboard className="w-5 h-5" />
+            </div>
+            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 tracking-tight">Command Center</h2>
           </div>
         </div>
 
@@ -146,23 +149,24 @@ export const Navbar = ({ onToggleSidebar, isSidebarOpen }) => {
               <button
                 type="button"
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="flex items-center gap-2.5 py-1 rounded-xl hover:opacity-80 transition-opacity"
+                className="flex items-center gap-3 py-1.5 px-3 rounded-full hover:bg-slate-100 transition-colors border border-transparent hover:border-slate-200"
               >
                 <div className="text-right hidden sm:block">
-                  <p className="text-sm font-bold text-slate-800 leading-tight">
+                  <p className="text-[13px] font-bold text-slate-800 leading-tight">
                     {user.full_name || user.email.split('@')[0]}
                   </p>
-                  <p className="text-[10px] text-slate-500 font-medium capitalize">
+                  <p className="text-[10px] text-brand-600 font-bold uppercase tracking-wider mt-0.5">
                     {user.role || 'Customer'}
                   </p>
                 </div>
-                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-brand-600 to-brand-400 text-white font-bold flex items-center justify-center text-sm shadow-md ring-2 ring-white overflow-hidden">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-brand-500 to-brand-700 text-white font-bold flex items-center justify-center text-sm shadow-sm ring-2 ring-white overflow-hidden shrink-0">
                   {user.profile_image_url ? (
                     <img src={user.profile_image_url} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
                     user.full_name ? user.full_name.charAt(0).toUpperCase() : 'U'
                   )}
                 </div>
+                <ChevronDown className="w-4 h-4 text-slate-400 hidden sm:block" />
               </button>
 
               {/* Profile Menu Popover */}
