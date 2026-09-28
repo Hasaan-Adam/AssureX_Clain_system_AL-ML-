@@ -1,4 +1,4 @@
-"""
+﻿"""
 AssureX Claim Engine - Analytics API Router
 Provides endpoints for trend analytics, fault distributions, brand reliability, and fraud insights.
 """
@@ -24,7 +24,7 @@ router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
 @router.get("/overview", response_model=AnalyticsOverviewResponse)
 def get_analytics_overview(
-    current_user = Depends(require_role(RoleEnum.STAFF)),
+    current_user = Depends(require_role(RoleEnum.SERVICE_STAFF)),
     db: Session = Depends(get_db),
 ):
     """Retrieve full analytics overview (time series, faults, brand reliability, fraud)."""
@@ -34,7 +34,7 @@ def get_analytics_overview(
 @router.get("/trends", response_model=List[TimeSeriesPoint])
 def get_trends(
     days: int = Query(30, ge=7, le=180, description="Trailing number of days"),
-    current_user = Depends(require_role(RoleEnum.STAFF)),
+    current_user = Depends(require_role(RoleEnum.SERVICE_STAFF)),
     db: Session = Depends(get_db),
 ):
     """Retrieve time-series volume trends."""
@@ -43,7 +43,7 @@ def get_trends(
 
 @router.get("/faults", response_model=List[FaultDistributionItem])
 def get_fault_distribution(
-    current_user = Depends(require_role(RoleEnum.STAFF)),
+    current_user = Depends(require_role(RoleEnum.SERVICE_STAFF)),
     db: Session = Depends(get_db),
 ):
     """Retrieve fault type distribution."""
@@ -52,7 +52,7 @@ def get_fault_distribution(
 
 @router.get("/reliability", response_model=List[BrandReliabilityItem])
 def get_brand_reliability(
-    current_user = Depends(require_role(RoleEnum.STAFF)),
+    current_user = Depends(require_role(RoleEnum.SERVICE_STAFF)),
     db: Session = Depends(get_db),
 ):
     """Retrieve brand reliability ratings."""
@@ -66,3 +66,4 @@ def get_fraud_statistics(
 ):
     """Retrieve fraud detection stats and risk breakdowns."""
     return analytics_service.get_fraud_detection_stats(db)
+

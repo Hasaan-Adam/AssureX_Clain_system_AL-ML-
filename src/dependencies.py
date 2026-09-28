@@ -1,4 +1,4 @@
-"""FastAPI Dependencies - Database, Auth, RBAC, Request Context"""
+﻿"""FastAPI Dependencies - Database, Auth, RBAC, Request Context"""
 
 from __future__ import annotations
 
@@ -124,7 +124,7 @@ def get_optional_user(
 def require_role(*allowed_roles: Any):
     """Dependency factory for role-based access control.
 
-    Both sides of the comparison are normalised, so ``RoleEnum.STAFF``,
+    Both sides of the comparison are normalised, so ``RoleEnum.SERVICE_STAFF``,
     ``"staff"`` and ``"service_staff"`` are all treated as the same role.
     """
     def role_checker(current_user: Annotated["UserOut", Depends(get_current_active_user)]) -> "UserOut":

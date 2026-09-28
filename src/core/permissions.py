@@ -1,4 +1,4 @@
-"""
+﻿"""
 AssureX Claim Engine - Role-Based Access Control (RBAC) & Permissions
 """
 
@@ -26,7 +26,7 @@ DEFAULT_ROLE_HIERARCHY: Dict[str, Set[str]] = {
         "profile:read_own",
         "profile:update_own",
     },
-    RoleEnum.STAFF.value: {
+    RoleEnum.SERVICE_STAFF.value: {
         "claims:read_all",
         "claims:create_on_behalf",
         "claims:add_notes",
@@ -76,7 +76,7 @@ DEFAULT_ROLE_HIERARCHY: Dict[str, Set[str]] = {
 
 ROLE_RANK: Dict[str, int] = {
     RoleEnum.CUSTOMER.value: 10,
-    RoleEnum.STAFF.value: 20,
+    RoleEnum.SERVICE_STAFF.value: 20,
     RoleEnum.REVIEWER.value: 30,
     RoleEnum.ADMIN.value: 100,
 }
@@ -95,7 +95,7 @@ def load_roles_config(roles_file_path: Optional[str] = None) -> Dict[str, Set[st
             if rank >= 20:
                 role_perms |= DEFAULT_ROLE_HIERARCHY.get(RoleEnum.CUSTOMER.value, set())
             if rank >= 30:
-                role_perms |= DEFAULT_ROLE_HIERARCHY.get(RoleEnum.STAFF.value, set())
+                role_perms |= DEFAULT_ROLE_HIERARCHY.get(RoleEnum.SERVICE_STAFF.value, set())
             if rank >= 100:
                 role_perms |= DEFAULT_ROLE_HIERARCHY.get(RoleEnum.REVIEWER.value, set())
             merged[role] = role_perms

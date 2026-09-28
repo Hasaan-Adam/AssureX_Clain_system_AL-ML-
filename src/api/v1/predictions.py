@@ -1,4 +1,4 @@
-"""
+﻿"""
 AssureX Claim Engine - AI Predictions & Model Evaluation API Router
 Provides endpoints for executing AI inference, batch evaluations, and consensus inspections.
 """
@@ -28,7 +28,7 @@ router = APIRouter(prefix="/predictions", tags=["Predictions"])
 @router.post("/adjudicate/{claim_id}", response_model=Dict[str, Any])
 def evaluate_single_claim(
     claim_id: int,
-    current_user: User = Depends(require_role(RoleEnum.STAFF, RoleEnum.ADMIN, RoleEnum.REVIEWER, RoleEnum.CUSTOMER)),
+    current_user: User = Depends(require_role(RoleEnum.SERVICE_STAFF, RoleEnum.ADMIN, RoleEnum.REVIEWER, RoleEnum.CUSTOMER)),
     db: Session = Depends(get_db),
 ):
     """Trigger on-demand AI and rule adjudication for a claim."""
@@ -85,3 +85,4 @@ def batch_predict(
             })
 
     return {"total": len(results), "predictions": results}
+

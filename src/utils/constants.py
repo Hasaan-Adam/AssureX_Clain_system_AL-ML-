@@ -7,16 +7,10 @@ from typing import Optional
 
 
 class RoleEnum(str, Enum):
-    """Canonical role set for the whole application.
-
-    ``STAFF`` is kept as an enum alias of ``SERVICE_STAFF`` so that older
-    references (``RoleEnum.STAFF``) keep working while the persisted value is
-    always the canonical ``service_staff`` string.
-    """
+    """Canonical role set for the whole application."""
 
     CUSTOMER = "customer"
     SERVICE_STAFF = "service_staff"
-    STAFF = "service_staff"
     REVIEWER = "reviewer"
     ADMIN = "admin"
 
