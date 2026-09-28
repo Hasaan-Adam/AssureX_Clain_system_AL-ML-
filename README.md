@@ -7,7 +7,7 @@ An AI-powered, Web-based warranty claim validation application that helps manufa
 ## 🔗 Live Deployment URLs
 - **Frontend (Vercel):** [Insert your Vercel URL here]
 - **Backend API (Ngrok):** `https://unworthy-squishy-knelt.ngrok-free.dev`
-- **Technical Blog:** https://abkbloggers.blogspot.com/2026/09/claim-engine-comprehensive-technical.html
+- **Technical Blog:** https://abkbloggers.blogspot.com/2026/09/assurex-claim-engine-comprehensive.html
 - **Demonstration Video:** [Insert your YouTube/Drive link here]
 
 ### Evaluator Login Credentials
