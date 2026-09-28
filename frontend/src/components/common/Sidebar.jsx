@@ -103,24 +103,30 @@ export const Sidebar = ({ isOpen, onClose }) => {
         {/* Brand Header */}
         <NavLink
           to={isAdmin ? '/admin' : isReviewer || isStaff ? '/reviews' : '/dashboard'}
-          className="h-18 py-4 flex items-center px-6 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
+          className="h-[72px] flex items-center gap-3 px-6 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
         >
-          <img src="/logo.png" alt="AssureX Logo" className="h-11 w-auto object-contain drop-shadow-sm" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-500/30 shrink-0">
+            <ShieldCheck className="w-5 h-5 text-white" />
+          </div>
+          <div className="flex items-baseline">
+            <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Assure</span>
+            <span className="text-2xl font-black tracking-tight text-brand-600 dark:text-brand-400">X</span>
+          </div>
         </NavLink>
 
         <div className="flex flex-col flex-1 overflow-y-auto">
           {/* User Profile Section */}
           {user && (
-            <div className="p-5 border-b border-slate-100 dark:border-slate-800">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-500 to-brand-500 text-white flex items-center justify-center text-sm font-bold shadow-md shrink-0">
+            <div className="p-4">
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700 transition-colors">
+                <div className="w-10 h-10 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 flex items-center justify-center text-sm font-bold shrink-0 ring-2 ring-white dark:ring-slate-900">
                   {user.full_name ? user.full_name.charAt(0).toUpperCase() : 'U'}
                 </div>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-[14px] font-bold text-slate-700 dark:text-slate-200 truncate leading-none mb-2">
                     {user.full_name || 'User'}
                   </span>
-                  <div className="mt-0.5">
+                  <div className="flex items-center">
                     <Badge type="status" value={user.role || 'CUSTOMER'} size="sm" />
                   </div>
                 </div>
