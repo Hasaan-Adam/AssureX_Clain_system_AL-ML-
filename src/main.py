@@ -40,6 +40,10 @@ async def lifespan(app: FastAPI):
 
     Base.metadata.create_all(bind=engine)
 
+    # Seed demo users on first startup
+    from database.seed import seed_demo_users
+    seed_demo_users()
+
     yield
 
 
